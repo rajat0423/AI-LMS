@@ -59,6 +59,16 @@ except ImportError:
 
 
 
+import os
+from app.core.config import settings
+
+# Auto-create directory for SQLite file databases if it doesn't exist
+if settings.DATABASE_URL.startswith("sqlite:///./"):
+    db_path = settings.DATABASE_URL.replace("sqlite:///./", "")
+    db_dir = os.path.dirname(db_path)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
+
 Base.metadata.create_all(bind=engine)
 
 ERROR_CODES = {
