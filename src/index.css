@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Smooth theme transition at the root level */
+  html {
+    scroll-behavior: smooth;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Dark mode body */
+  .dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  /* Ensure minimum readable font sizes */
+  p, li, span, label, input, textarea, select, button {
+    font-size: inherit;
+  }
+
+  /* Light mode selection */
+  ::selection {
+    @apply bg-indigo-500/30 text-indigo-900;
+  }
+
+  /* Dark mode selection */
+  .dark ::selection {
+    @apply bg-indigo-400/30 text-indigo-100;
+  }
+
+  /* Light scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+
+  /* Dark scrollbar */
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700 rounded-full;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600;
+  }
+
+  /* Smooth transitions for theme-switching elements */
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-timing-function: ease;
+    transition-duration: 0ms;
+  }
+
+  /* Only animate theme transitions, not all properties */
+  .dark *, .dark *::before, .dark *::after,
+  .light *, .light *::before, .light *::after {
+    transition-duration: 150ms;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
+  }
+  
+  .glass-dark {
+    @apply bg-slate-900/80 backdrop-blur-md border border-slate-700/50 shadow-xl;
+  }
+  
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500;
+  }
+
+  .text-gradient-brand {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-rose-700;
+  }
+
+  .dark .text-gradient-brand {
+    @apply from-blue-400 via-indigo-400 to-rose-400;
+  }
+}

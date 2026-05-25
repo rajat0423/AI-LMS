@@ -1,0 +1,22 @@
+# Environment
+.env
+venv/
+venv_*/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Database
+*.db
+*.sqlite3
+data/auth.db
+
+# Logs
+*.log
+
+# Temp
+scratch/
+backups/
