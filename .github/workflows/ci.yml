@@ -31,7 +31,7 @@ jobs:
         GROQ_API_KEY: testkey
         PYTHONPATH: ${{ github.workspace }}/backend
       run: |
-        pytest
+        python -m pytest
 
   frontend-build:
     runs-on: ubuntu-latest
