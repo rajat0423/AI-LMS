@@ -30,7 +30,9 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: nlm-db
+          property: connectionString
       - key: SECRET_KEY
         sync: false
       - key: GOOGLE_CLIENT_ID
@@ -41,3 +43,10 @@ services:
         sync: false
       - key: CORS_ORIGINS
         sync: false
+
+databases:
+  - name: nlm-db
+    databaseName: nlm_db
+    user: nlm_db_user
+    plan: free
+
