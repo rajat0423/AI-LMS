@@ -1,0 +1,24 @@
+name: Uptime Monitor & Keep Alive
+
+on:
+  schedule:
+    # Run every 10 minutes to keep the Render Free instance awake (sleeps after 15m of inactivity)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  ping:
+    name: Ping Render Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Uptime Endpoint
+        run: |
+          echo "Pinging backend at https://ai-lms-a9f4.onrender.com/ping..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://ai-lms-a9f4.onrender.com/ping)
+          echo "HTTP Status Code: $RESPONSE"
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "✅ Backend is awake and healthy!"
+          else
+            echo "❌ Backend returned status code $RESPONSE or is unreachable!"
+            exit 1
+          fi
