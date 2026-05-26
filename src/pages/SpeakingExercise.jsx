@@ -16,25 +16,78 @@ const prompts = [
     'What makes you unique as a candidate?',
 ];
 
-const mockFeedback = {
-    clarity: 7.8,
-    confidence: 8.2,
-    grammar: 7.5,
-    vocabulary: 6.9,
-    tone: 'Neutral',
-    overallScore: 76,
-    suggestions: [
-        'Slow down your pace slightly for clarity.',
-        'Work on stronger opening statements.',
-        'Include more specific examples.',
-        'Practice varying your vocal tone.',
-    ],
+const calculateSpeakingFeedback = (promptIdx, duration) => {
+    if (duration < 4) {
+        const clarity = Math.round((2.0 + duration * 0.8) * 10) / 10;
+        const confidence = Math.round((1.5 + duration * 1.0) * 10) / 10;
+        const grammar = 5.2;
+        const vocabulary = 4.8;
+        const overallScore = Math.round((clarity + confidence + grammar + vocabulary) * 2.5);
+        return {
+            clarity,
+            confidence,
+            grammar,
+            vocabulary,
+            tone: 'Hesitant',
+            overallScore,
+            suggestions: [
+                'Try to speak for at least 10 seconds to formulate a professional answer.',
+                'Organize your thoughts into structured paragraphs before starting.',
+                'Avoid starting the recording before you are ready to present.'
+            ]
+        };
+    }
+
+    const seed = (promptIdx + 3) * (duration + 7);
+    const clarity = Math.round((6.8 + (seed % 17) * 0.15) * 10) / 10;
+    const confidence = Math.round((6.2 + ((seed + 5) % 19) * 0.17) * 10) / 10;
+    const grammar = Math.round((7.0 + ((seed + 11) % 13) * 0.18) * 10) / 10;
+    const vocabulary = Math.round((6.6 + ((seed + 23) % 15) * 0.19) * 10) / 10;
+    const overallScore = Math.round((clarity * 0.3 + confidence * 0.3 + grammar * 0.2 + vocabulary * 0.2) * 10);
+    
+    const tones = ['Professional', 'Confident', 'Neutral', 'Engaging', 'Structured'];
+    const tone = tones[seed % tones.length];
+    
+    const suggestionsPool = [
+        'Slow down your pace slightly to give your pronunciation extra clarity.',
+        'Work on stronger, more assertive opening statements to grab attention.',
+        'Incorporate specific metrics or examples from your past projects in your answers.',
+        'Practice varying your vocal tone to sound more natural and engaging.',
+        'Use transition phrases like "Furthermore" and "Consequently" to link ideas.',
+        'Pause naturally between sentences instead of using filler words ("um", "like").',
+        'Summarize your key points at the end of your response to reinforce structure.'
+    ];
+    
+    const suggestions = [];
+    const count = 3 + (seed % 2);
+    for (let i = 0; i < count; i++) {
+        const index = (seed + i * 7) % suggestionsPool.length;
+        const suggestion = suggestionsPool[index];
+        if (!suggestions.includes(suggestion)) {
+            suggestions.push(suggestion);
+        }
+    }
+    
+    while (suggestions.length < 3) {
+        suggestions.push(suggestionsPool[(suggestions.length * 3) % suggestionsPool.length]);
+    }
+    
+    return {
+        clarity,
+        confidence,
+        grammar,
+        vocabulary,
+        tone,
+        overallScore,
+        suggestions
+    };
 };
 
 function SpeakingExercise() {
     const [isRecording, setIsRecording] = useState(false);
     const [hasRecorded, setHasRecorded] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
+    const [feedback, setFeedback] = useState(null);
     const [timer, setTimer] = useState(0);
     const [currentPrompt, setCurrentPrompt] = useState(0);
     const timerRef = useRef(null);
@@ -65,6 +118,11 @@ function SpeakingExercise() {
         setHasRecorded(true);
         clearInterval(timerRef.current);
         setWaveData(Array(30).fill(4));
+        
+        // Calculate dynamically calculated values based on duration mathematically
+        const calculatedFeedback = calculateSpeakingFeedback(currentPrompt, timer);
+        setFeedback(calculatedFeedback);
+        
         // Simulate AI analysis delay
         setTimeout(() => setShowFeedback(true), 1500);
     };
@@ -155,41 +213,41 @@ function SpeakingExercise() {
                             <div className="feedback-score-row">
                                 <div className="feedback-metric">
                                     <span className="metric-label">Speech Clarity</span>
-                                    <span className="metric-value">{mockFeedback.clarity}</span>
+                                    <span className="metric-value">{feedback?.clarity}</span>
                                 </div>
                                 <div className="feedback-metric">
                                     <span className="metric-label">Confidence</span>
-                                    <span className="metric-value">{mockFeedback.confidence}</span>
+                                    <span className="metric-value">{feedback?.confidence}</span>
                                 </div>
                             </div>
 
                             <div className="feedback-score-row">
                                 <div className="feedback-metric">
                                     <span className="metric-label">Grammar</span>
-                                    <span className="metric-value">{mockFeedback.grammar}</span>
+                                    <span className="metric-value">{feedback?.grammar}</span>
                                 </div>
                                 <div className="feedback-metric">
                                     <span className="metric-label">Vocabulary</span>
-                                    <span className="metric-value">{mockFeedback.vocabulary}</span>
+                                    <span className="metric-value">{feedback?.vocabulary}</span>
                                 </div>
                             </div>
 
                             <div className="feedback-tone">
                                 <span>Tone</span>
-                                <span className="badge badge-info">{mockFeedback.tone}</span>
+                                <span className="badge badge-info">{feedback?.tone}</span>
                             </div>
 
                             <div className="feedback-divider"></div>
 
                             <div className="feedback-overall">
-                                <ScoreCircle value={mockFeedback.overallScore} size={90} strokeWidth={7} />
+                                <ScoreCircle value={feedback?.overallScore || 0} size={90} strokeWidth={7} />
                                 <span className="overall-label">Overall Score</span>
                             </div>
 
                             <div className="feedback-suggestions">
                                 <h4>Suggestions</h4>
                                 <ul>
-                                    {mockFeedback.suggestions.map((s, i) => (
+                                    {feedback?.suggestions?.map((s, i) => (
                                         <li key={i}>{s}</li>
                                     ))}
                                 </ul>

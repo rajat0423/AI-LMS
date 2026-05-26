@@ -45,13 +45,29 @@ export default function Dashboard() {
     const { user } = useAuth();
     const { userState } = useGlobalUser();
 
-    // Local state for interactive checklist
     const [checklist, setChecklist] = useState([
         { id: 1, text: 'Analyze Resume against target Job Description', completed: false, xp: 100 },
-        { id: 2, text: 'Complete your first Reading Comprehension topic quiz', completed: true, xp: 150 },
+        { id: 2, text: 'Complete your first Reading Comprehension topic quiz', completed: false, xp: 150 },
         { id: 3, text: 'Take a Mock Interview session with the AI Coach', completed: false, xp: 250 },
         { id: 4, text: 'Draft a professional follow-up email', completed: false, xp: 50 },
     ]);
+
+    // Dynamically synchronize daily missions with real database statistics and local storage triggers
+    useEffect(() => {
+        if (userState?.stats) {
+            const hasUploadedResume = (userState.stats.resume_score || 0) > 0;
+            const hasCompletedQuiz = (userState.stats.completed_lessons || 0) > 0;
+            const hasTakenInterview = !!userState.stats.has_taken_interview;
+            const hasDraftedEmail = localStorage.getItem('nlm-has-drafted-email') === 'true';
+            
+            setChecklist([
+                { id: 1, text: 'Analyze Resume against target Job Description', completed: hasUploadedResume, xp: 100 },
+                { id: 2, text: 'Complete your first Reading Comprehension topic quiz', completed: hasCompletedQuiz, xp: 150 },
+                { id: 3, text: 'Take a Mock Interview session with the AI Coach', completed: hasTakenInterview, xp: 250 },
+                { id: 4, text: 'Draft a professional follow-up email', completed: hasDraftedEmail, xp: 50 },
+            ]);
+        }
+    }, [userState]);
 
     // State for interactive notification or tips
     const [activeTip, setActiveTip] = useState(0);
@@ -143,9 +159,9 @@ export default function Dashboard() {
             time: '15 mins'
         },
         { 
-            label: 'Resume Optimizer', 
+            label: 'ATS Score Calculator', 
             path: '/resume', 
-            desc: 'Scan resume keywords against target Job Descriptions.', 
+            desc: 'Scan resume keywords against target Job Descriptions to calculate your match score.', 
             icon: FileText, 
             col: 'text-indigo-700 dark:text-indigo-400', 
             bg: 'bg-indigo-50 dark:bg-indigo-950/30', 

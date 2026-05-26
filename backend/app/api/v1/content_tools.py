@@ -4,7 +4,7 @@ Content Tools routes — Email Generator and Blog Writer.
 
 Secured with require_student so any logged-in user can access these features.
 """
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, File, Form, UploadFile
 
 from app.core.api_docs import error_responses
 from app.core.permissions import require_student
@@ -18,6 +18,7 @@ from app.schemas.content_tools import (
     EmailAssistResponse,
     EmailGenerateRequest,
     EmailGenerateResponse,
+    TailoredResumeResponse,
 )
 from app.services import content_tools_service
 
@@ -121,3 +122,23 @@ def list_published_blogs(
     """List privately published blogs for the authenticated user."""
     blogs = content_tools_service.list_published_blogs(author_email=author_email)
     return {"blogs": blogs}
+
+
+# ── AI Custom Resume Generator ──────────────────────────────────────────────────
+
+@router.post(
+    "/resume/tailor",
+    response_model=TailoredResumeResponse,
+    responses=error_responses(400, 401, 403, 422, 500, 502),
+)
+def tailor_resume(
+    resume_file: UploadFile = File(...),
+    job_description: str = Form(...),
+    _current_user: User = Depends(require_student),
+) -> TailoredResumeResponse:
+    """Upload a PDF resume and job description to generate an ATS-optimized tailored resume JSON."""
+    return content_tools_service.tailor_resume(
+        resume_file=resume_file,
+        job_description=job_description,
+    )
+

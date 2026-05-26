@@ -31,6 +31,10 @@ class LearningStatsResponse(BaseModel):
     completion_percentage: float
     current_streak: int
     longest_streak: int
+    resume_score: int
+    avg_accuracy: int
+    confidence_score: int
+    has_taken_interview: bool
 
     model_config = ConfigDict(from_attributes=True)
 

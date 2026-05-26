@@ -7,9 +7,10 @@ import {
     PenTool,
     Sparkles,
     ArrowRight,
-    Zap
+    Zap,
+    Briefcase
 } from 'lucide-react';
-
+ 
 const aiTools = [
     {
         id: 'mock-interview',
@@ -22,9 +23,19 @@ const aiTools = [
         border: 'border-violet-200'
     },
     {
+        id: 'resume-tailor',
+        title: 'AI Custom Resume Generator',
+        description: 'Upload your PDF and tailor it to any Job Description using Groq AI with 10 premium single-page style presets.',
+        path: '/resume-tailor',
+        icon: Briefcase,
+        color: 'text-purple-600',
+        bg: 'bg-purple-100',
+        border: 'border-purple-200'
+    },
+    {
         id: 'resume-analyzer',
-        title: 'Resume Optimizer',
-        description: 'Scan your resume against any Job Description to beat ATS algorithms.',
+        title: 'ATS Score Calculator',
+        description: 'Scan your resume against any Job Description to calculate your dynamic ATS match score and keyword gaps.',
         path: '/resume',
         icon: FileText,
         color: 'text-blue-600',

@@ -110,3 +110,45 @@ class BlogPublishResponse(BaseModel):
     suggestion_count: int
     review_summary: Optional[str]
     published_at: str
+
+
+# ── AI Custom Resume Generator ──────────────────────────────────────────────────
+
+class PersonalInfoSchema(BaseModel):
+    name: str = ""
+    title: str = ""
+    email: str = ""
+    phone: str = ""
+    location: str = ""
+    linkedin: str = ""
+    github: str = ""
+
+class ExperienceItemSchema(BaseModel):
+    company: str = ""
+    role: str = ""
+    location: str = ""
+    start_date: str = ""
+    end_date: str = ""
+    bullets: list[str] = []
+
+class EducationItemSchema(BaseModel):
+    school: str = ""
+    degree: str = ""
+    location: str = ""
+    start_date: str = ""
+    end_date: str = ""
+    gpa: str = ""
+
+class ProjectItemSchema(BaseModel):
+    title: str = ""
+    technologies: list[str] = []
+    bullets: list[str] = []
+
+class TailoredResumeResponse(BaseModel):
+    personal_info: PersonalInfoSchema
+    summary: str = ""
+    skills: list[str] = []
+    experience: list[ExperienceItemSchema] = []
+    education: list[EducationItemSchema] = []
+    projects: list[ProjectItemSchema] = []
+

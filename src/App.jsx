@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound';
 
 // Features loaded lazily for performance code-splitting
 const ResumeAnalyzer = React.lazy(() => import('./pages/ResumeAnalyzer'));
+const ResumeTailor = React.lazy(() => import('./pages/ResumeTailor'));
 const EmployabilityReport = React.lazy(() => import('./pages/EmployabilityReport'));
 const EmailGenerator = React.lazy(() => import('./pages/EmailGenerator'));
 const BlogWriter = React.lazy(() => import('./pages/BlogWriter'));
@@ -86,6 +87,7 @@ function AppRoutes() {
         <Route path="/certificate/:id" element={<ProtectedRoute><Layout><CertificateViewer /></Layout></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><Layout><AiInterviewer /></Layout></ProtectedRoute>} />
         <Route path="/resume" element={<ProtectedRoute><Layout><ResumeAnalyzer /></Layout></ProtectedRoute>} />
+        <Route path="/resume-tailor" element={<ProtectedRoute><Layout><ResumeTailor /></Layout></ProtectedRoute>} />
         <Route path="/report" element={<ProtectedRoute><Layout><EmployabilityReport /></Layout></ProtectedRoute>} />
         <Route path="/email-writer" element={<ProtectedRoute><Layout><EmailGenerator /></Layout></ProtectedRoute>} />
         <Route path="/blog-writer" element={<ProtectedRoute><Layout><BlogWriter /></Layout></ProtectedRoute>} />

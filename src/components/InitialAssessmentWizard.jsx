@@ -37,11 +37,23 @@ export default function InitialAssessmentWizard() {
     const { token } = useAuth();
     const [currentStep, setCurrentStep] = useState(0);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [answers, setAnswers] = useState(["5", ""]); // Default anxiety to 5, tailored to empty
 
     const handleNext = async () => {
         if (currentStep < steps.length - 1) {
+            if (currentStep === 1) {
+                const anxietyVal = parseInt(answers[0]);
+                if (isNaN(anxietyVal) || anxietyVal < 1 || anxietyVal > 10) {
+                    alert("Please enter a valid public speaking anxiety rating between 1 and 10.");
+                    return;
+                }
+            }
             setCurrentStep(prev => prev + 1);
         } else {
+            if (!answers[1]) {
+                alert("Please select whether you have tailored your resume before.");
+                return;
+            }
             setIsAnalyzing(true);
             try {
                 const response = await fetch(apiUrl('/api/v1/assessment/complete'), {
@@ -50,7 +62,7 @@ export default function InitialAssessmentWizard() {
                         'Content-Type': 'application/json',
                         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                     },
-                    body: JSON.stringify({ answers: [] })
+                    body: JSON.stringify({ answers: [answers[0], answers[1]] })
                 });
                 if (!response.ok) throw new Error("Assessment API failed");
                 const data = await response.json();
@@ -59,11 +71,13 @@ export default function InitialAssessmentWizard() {
                 console.error("Failed to complete assessment:", error);
                 // Fallback if backend is unavailable
                 setTimeout(() => {
+                    const anxietyNum = parseInt(answers[0]) || 5;
+                    const tailored = answers[1] === "Yes";
                     completeAssessment({
-                        communication: 65,
-                        confidence: 70,
-                        professionalReadiness: 60,
-                        resumeMatch: 55
+                        communication: Math.max(15, 100 - (anxietyNum * 8)),
+                        confidence: Math.max(15, 100 - (anxietyNum * 6) + (tailored ? 10 : -10)),
+                        professionalReadiness: tailored ? 85 : 45,
+                        resumeMatch: tailored ? 80 : 35
                     });
                 }, 1500);
             } finally {
@@ -123,14 +137,54 @@ export default function InitialAssessmentWizard() {
                                 {step.subtitle}
                             </p>
 
-                            {/* Mock Input Area for visual completeness */}
-                            {currentStep > 0 && (
-                                <div className="w-full max-w-sm mb-10">
+                             {currentStep === 1 && (
+                                <div className="w-full max-w-sm mb-10 flex flex-col gap-2">
                                     <input 
-                                        type="text" 
-                                        placeholder="Type your answer here..."
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 rounded-xl focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950 focus:border-indigo-500 outline-none transition-all text-slate-750 dark:text-slate-100 font-extrabold text-center"
+                                        type="number" 
+                                        min="1"
+                                        max="10"
+                                        placeholder="Enter a rating from 1 to 10..."
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 rounded-xl focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950 focus:border-indigo-500 outline-none transition-all text-slate-750 dark:text-slate-100 font-extrabold text-center text-xl"
+                                        value={answers[0]}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            setAnswers(prev => {
+                                                const copy = [...prev];
+                                                copy[0] = val;
+                                                return copy;
+                                            });
+                                        }}
                                     />
+                                    <span className="text-xs font-semibold text-slate-400">1 = Very calm, 10 = Severe anxiety</span>
+                                </div>
+                            )}
+
+                            {currentStep === 2 && (
+                                <div className="w-full max-w-sm mb-10 flex justify-center gap-4">
+                                    <button 
+                                        onClick={() => {
+                                            setAnswers(prev => {
+                                                const copy = [...prev];
+                                                copy[1] = "Yes";
+                                                return copy;
+                                            });
+                                        }}
+                                        className={`px-8 py-3.5 rounded-xl font-bold transition-all border text-base ${answers[1] === "Yes" ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200'}`}
+                                    >
+                                        Yes, I have
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            setAnswers(prev => {
+                                                const copy = [...prev];
+                                                copy[1] = "No";
+                                                return copy;
+                                            });
+                                        }}
+                                        className={`px-8 py-3.5 rounded-xl font-bold transition-all border text-base ${answers[1] === "No" ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200'}`}
+                                    >
+                                        No, never
+                                    </button>
                                 </div>
                             )}
 

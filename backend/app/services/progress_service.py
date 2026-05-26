@@ -22,6 +22,10 @@ class LearningStats:
     completion_percentage: float
     current_streak: int
     longest_streak: int
+    resume_score: int
+    avg_accuracy: int
+    confidence_score: int
+    has_taken_interview: bool
 
 
 def _update_streak(db: Session, user_id: uuid.UUID) -> Streak:
@@ -178,6 +182,38 @@ def get_learning_stats(db: Session, user: User) -> LearningStats:
         2,
     )
 
+    # ── 1. Calculate Real Average Accuracy ──
+    progress_with_scores = [p for p in accessible_completed_progress if p.score is not None]
+    if progress_with_scores:
+        avg_accuracy = int(sum(p.score for p in progress_with_scores) / len(progress_with_scores))
+    else:
+        avg_accuracy = 0
+
+    # ── 2. Calculate Real Confidence Score ──
+    if completion_percentage > 0 or avg_accuracy > 0:
+        confidence_score = int((completion_percentage * 0.4) + (avg_accuracy * 0.6))
+        confidence_score = max(35, min(100, confidence_score))
+    else:
+        confidence_score = 0
+
+    # ── 3. Calculate Real Resume ATS Match Score ──
+    from app.models.career_analysis import ResumeAnalysis
+    latest_analysis = (
+        db.query(ResumeAnalysis)
+        .filter(ResumeAnalysis.user_id == user.user_id)
+        .order_by(ResumeAnalysis.created_at.desc())
+        .first()
+    )
+    resume_score = latest_analysis.match_percentage if latest_analysis and latest_analysis.match_percentage else 0
+
+    # ── 4. Query InterviewSession for Taken State ──
+    from app.models.interview import InterviewSession
+    has_taken_interview = (
+        db.query(InterviewSession)
+        .filter(InterviewSession.user_id == user.user_id)
+        .first()
+    ) is not None
+
     return LearningStats(
         total_modules=total_modules,
         completed_modules=completed_modules,
@@ -186,4 +222,8 @@ def get_learning_stats(db: Session, user: User) -> LearningStats:
         completion_percentage=completion_percentage,
         current_streak=streak.current_streak if streak else 0,
         longest_streak=streak.longest_streak if streak else 0,
+        resume_score=resume_score,
+        avg_accuracy=avg_accuracy,
+        confidence_score=confidence_score,
+        has_taken_interview=has_taken_interview,
     )
