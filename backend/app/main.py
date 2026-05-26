@@ -120,10 +120,11 @@ app = FastAPI(
 )
 
 
-# ── Rate Limiting Middleware ─────────────────────────────────────────────────
-@app.on_event("startup")
-def ensure_modules_seeded():
-    """Ensure first-year, second-year, third-year, and fourth-year module quizzes exist for the module section."""
+# Rate Limiting Middleware -------------------------------------------------
+import threading
+
+def run_async_seeding():
+    logger.info("Background database seeding started...")
     try:
         seed_year_one_course()
     except Exception as exc:
@@ -140,6 +141,12 @@ def ensure_modules_seeded():
         seed_year_four_course()
     except Exception as exc:
         logger.exception("Failed to seed fourth-year module quizzes: %s", exc)
+    logger.info("Background database seeding complete.")
+
+@app.on_event("startup")
+def start_seeding_task():
+    """Ensure first-year, second-year, third-year, and fourth-year module quizzes exist in a non-blocking background thread."""
+    threading.Thread(target=run_async_seeding, daemon=True).start()
 
 
 

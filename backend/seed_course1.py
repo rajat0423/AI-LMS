@@ -301,12 +301,13 @@ def seed(db: Session | None = None, *, raw_text: str | None = None, apply_migrat
         db = SessionLocal()
         created_local_session = True
 
-    # Delete existing Year 1 module to allow full clean replacement
+    # Check if Year 1 module already exists to prevent redundant deletions and re-seeding
     existing = db.query(Module).filter(Module.title == COURSE["title"], Module.year == COURSE["year"]).first()
     if existing:
-        print(f"Module '{COURSE['title']}' for Year 1 already exists (id={existing.module_id}). Deleting existing module to re-seed...")
-        db.delete(existing)
-        db.commit()
+        print(f"Module '{COURSE['title']}' for Year 1 already exists (id={existing.module_id}). Skipping.")
+        if created_local_session:
+            db.close()
+        return False
 
     try:
         module = Module(
