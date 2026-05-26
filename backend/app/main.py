@@ -26,7 +26,11 @@ from app.api.v1.admin_content import router as admin_content_router
 from app.api.v1.quiz import router as quiz_router
 from app.api.v1.certificate import router as certificate_router
 from app.api.v1.community import router as community_router
-from app.database import Base, engine
+from app.database import Base, engine, SessionLocal
+from app.models.user import User
+from app.models.role import Role
+from app.core.security import hash_password
+import uuid
 from app.models import *  # noqa: F401,F403
 from app.schemas.common import ApiMessageResponse, ErrorResponse, HealthResponse
 try:
@@ -143,9 +147,48 @@ def run_async_seeding():
         logger.exception("Failed to seed fourth-year module quizzes: %s", exc)
     logger.info("Background database seeding complete.")
 
+def create_admin_user_on_startup():
+    db = SessionLocal()
+    try:
+        # Check if admin role exists
+        admin_role = db.query(Role).filter(Role.role_name == "admin").first()
+        if not admin_role:
+            admin_role = Role(role_id=uuid.uuid4(), role_name="admin", permissions={})
+            db.add(admin_role)
+            db.commit()
+            db.refresh(admin_role)
+
+        # Check if user exists
+        email = "dpklms@admin.com"
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            user = User(
+                user_id=uuid.uuid4(),
+                email=email,
+                password_hash=hash_password("Dpk@247+"),
+                first_name="Deepak",
+                last_name="LMS",
+                year=3,
+                role_id=admin_role.role_id,
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            logger.info("Admin user 'dpklms@admin.com' created successfully on startup.")
+        else:
+            logger.info("Admin user 'dpklms@admin.com' already exists on database.")
+    except Exception as exc:
+        logger.exception("Failed to create admin user on startup: %s", exc)
+    finally:
+        db.close()
+
 @app.on_event("startup")
 def start_seeding_task():
     """Ensure first-year, second-year, third-year, and fourth-year module quizzes exist in a non-blocking background thread."""
+    try:
+        create_admin_user_on_startup()
+    except Exception as exc:
+        logger.exception("Failed to initialize admin user: %s", exc)
     threading.Thread(target=run_async_seeding, daemon=True).start()
 
 
