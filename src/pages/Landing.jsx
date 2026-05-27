@@ -3,7 +3,7 @@ import { useAuth } from '../context/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Bot, Sparkles, Brain, CheckCircle2, Eye, EyeOff, 
-    ArrowRight, Mic, FileText, Zap, ChevronRight, PlayCircle
+    ArrowRight, Mic, FileText, Zap, ChevronRight, PlayCircle, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -243,8 +243,7 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
             }
         } catch (error) { 
             setErrorMessage(error.message || 'Authentication failed.'); 
-        } 
-        finally { 
+        } finally { 
             setIsSubmitting(false); 
         }
     };
@@ -254,121 +253,256 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
     return (
         <AnimatePresence>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex justify-end bg-slate-900/40 backdrop-blur-sm"
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-md p-4 md:p-6"
                 onClick={onClose}>
-                <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col pt-16 px-8 relative"
+                <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                    className="w-full max-w-4xl h-[90vh] md:h-[650px] bg-white shadow-2xl flex flex-col md:flex-row relative rounded-2xl overflow-hidden"
                     onClick={e => e.stopPropagation()}>
                     
-                    <button onClick={onClose} className="absolute top-6 right-6 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
-                        <ArrowRight size={20} />
-                    </button>
-
-                    <div className="mb-8">
-                        <img src="/logo.webp" alt="Aao Seekhe" className="h-8 mb-6" />
-                        <h2 className="text-2xl font-bold text-slate-900 font-heading">
-                            {isSignUp ? 'Create your account' : 'Welcome back'}
-                        </h2>
-                        <p className="text-slate-500 text-sm mt-2">
-                            {isSignUp ? 'Start mastering your career skills today.' : 'Sign in to jump back into your learning journey.'}
-                        </p>
-                    </div>
-
-                    <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
-                        <button type="button" onClick={() => { setIsSignUp(false); setValidationErrors({ name: '', email: '', password: '', year: '' }); setTouched({ name: false, email: false, password: false, year: false }); setErrorMessage(''); }} className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${!isSignUp ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Log In</button>
-                        <button type="button" onClick={() => { setIsSignUp(true); setValidationErrors({ name: '', email: '', password: '', year: '' }); setTouched({ name: false, email: false, password: false, year: false }); setErrorMessage(''); }} className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${isSignUp ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Sign Up</button>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4 flex-1">
-                        <AnimatePresence>
-                            {isSignUp && (
-                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                                    <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 block">Full Name</label>
-                                    <input 
-                                        type="text" 
-                                        className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none ${validationErrors.name && touched.name ? 'border-red-300 bg-red-50' : 'border-slate-200'}`} 
-                                        placeholder="Lara Croft" 
-                                        value={name} 
-                                        onChange={(e) => handleFieldChange('name', e.target.value)} 
-                                        onBlur={() => handleFieldBlur('name')}
-                                        disabled={isSubmitting} 
-                                    />
-                                    {validationErrors.name && touched.name && (
-                                        <p className="text-red-500 text-xs font-semibold mt-1">{validationErrors.name}</p>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                        <AnimatePresence>
-                            {isSignUp && (
-                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                                    <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 block">Academic Year</label>
-                                    <select
-                                        className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none ${validationErrors.year && touched.year ? 'border-red-300 bg-red-50' : 'border-slate-200'}`}
-                                        value={selectedYear}
-                                        onChange={(e) => handleFieldChange('year', e.target.value)}
-                                        onBlur={() => handleFieldBlur('year')}
-                                        disabled={isSubmitting}
-                                    >
-                                        <option value="" disabled>Select academic year</option>
-                                        {YEAR_OPTIONS.map((year) => (
-                                            <option key={year.value} value={year.value}>
-                                                {year.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {validationErrors.year && touched.year && (
-                                        <p className="text-red-500 text-xs font-semibold mt-1">{validationErrors.year}</p>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                        <div>
-                            <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 block">Email Address</label>
-                            <input 
-                                type="email" 
-                                className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none ${validationErrors.email && touched.email ? 'border-red-300 bg-red-50' : 'border-slate-200'}`} 
-                                placeholder="you@domain.com" 
-                                value={email} 
-                                onChange={(e) => handleFieldChange('email', e.target.value)} 
-                                onBlur={() => handleFieldBlur('email')}
-                                disabled={isSubmitting} 
-                            />
-                            {validationErrors.email && touched.email && (
-                                <p className="text-red-500 text-xs font-semibold mt-1">{validationErrors.email}</p>
-                            )}
+                    {/* Left Column - Visual Showcase Pane (Hidden on mobile) */}
+                    <div className="hidden md:flex md:w-1/2 bg-slate-950 relative overflow-hidden flex-col justify-between p-12 text-white">
+                        {/* Background Image with Mix Blend Mode & Subtle Overlay */}
+                        <div className="absolute inset-0 bg-cover bg-center opacity-45 mix-blend-overlay scale-105" style={{ backgroundImage: "url('/login_showcase.png')" }} />
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/90 via-slate-950/95 to-indigo-950/90 z-0" />
+                        
+                        {/* Dynamic Floating Glowing Orbs for Aesthetic Wow-Factor */}
+                        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-violet-600/25 rounded-full blur-[120px] pointer-events-none" />
+                        
+                        {/* Top Header Section inside Showcase */}
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                                    <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                                </div>
+                                <span className="font-heading font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-white to-violet-200">
+                                    Aao Seekhe
+                                </span>
+                            </div>
+                            <h3 className="text-3xl font-black font-heading leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">
+                                Empowering Your <br/>Career Journey
+                            </h3>
+                            <p className="text-indigo-200/70 text-sm mt-3 leading-relaxed max-w-sm">
+                                Elevate your potential with a suite of hyper-personalized tools, automated resume optimizers, and tailored AI mocks.
+                            </p>
                         </div>
-                        <div className="relative">
-                            <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 block">Password</label>
-                            <input 
-                                type={showPassword ? "text" : "password"} 
-                                className={`w-full pl-4 pr-10 py-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none ${validationErrors.password && touched.password ? 'border-red-300 bg-red-50' : 'border-slate-200'}`} 
-                                placeholder="••••••••" 
-                                value={password} 
-                                onChange={(e) => handleFieldChange('password', e.target.value)} 
-                                onBlur={() => handleFieldBlur('password')}
-                                disabled={isSubmitting} 
-                            />
-                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-[28px] text-slate-400">
-                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                            </button>
-                            {validationErrors.password && touched.password && (
-                                <p className="text-red-500 text-xs font-semibold mt-1">{validationErrors.password}</p>
-                            )}
+                        
+                        {/* Floating Glassmorphic Features Pane */}
+                        <div className="relative z-10 space-y-4 my-auto">
+                            <div className="p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-start gap-4 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:translate-x-1">
+                                <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-300">
+                                    <Zap size={18} />
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-300">ATS Score Calculator</h4>
+                                    <p className="text-slate-300 text-xs mt-0.5">Optimize and score your resume dynamically in real-time against targeted role profiles.</p>
+                                </div>
+                            </div>
+                            
+                            <div className="p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-start gap-4 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:translate-x-1">
+                                <div className="p-2 rounded-lg bg-violet-500/20 text-violet-300">
+                                    <Brain size={18} />
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-violet-300">STAR Interview Coach</h4>
+                                    <p className="text-slate-300 text-xs mt-0.5">Engage in rich audio interactions and perfect your structured verbal behavior.</p>
+                                </div>
+                            </div>
                         </div>
-
-                        {errorMessage && <p className="text-red-500 text-xs font-semibold">{errorMessage}</p>}
-
-                        <button type="submit" disabled={isSubmitting} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-70 mt-6">
-                            {isSubmitting ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
+                        
+                        {/* Testimonial / Social Proof Footer inside Showcase */}
+                        <div className="relative z-10 pt-4 border-t border-white/10">
+                            <div className="flex items-center gap-3">
+                                <div className="flex -space-x-2">
+                                    <div className="w-8 h-8 rounded-full border border-slate-900 bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md">AS</div>
+                                    <div className="w-8 h-8 rounded-full border border-slate-900 bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md">JD</div>
+                                    <div className="w-8 h-8 rounded-full border border-slate-900 bg-amber-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md">KB</div>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold text-slate-300">Join 10,000+ students & professionals</p>
+                                    <p className="text-[10px] text-slate-400">Accelerating career transitions with AI models.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Right Column - Form Pane */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col justify-between p-8 md:p-12 relative overflow-y-auto bg-slate-50/50">
+                        {/* Close button */}
+                        <button onClick={onClose} className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors z-[10]">
+                            <X size={20} />
                         </button>
                         
-                        <div className="relative flex items-center py-4">
-                            <div className="flex-grow border-t border-slate-200"></div><span className="shrink-0 mx-4 text-slate-400 text-xs font-semibold">Or</span><div className="flex-grow border-t border-slate-200"></div>
+                        <div className="w-full max-w-sm mx-auto flex flex-col justify-center h-full space-y-6">
+                            
+                            {/* Logo and Greeting */}
+                            <div>
+                                <div className="flex items-center gap-2 mb-4 md:hidden">
+                                    <img src="/logo.webp" alt="Aao Seekhe" className="h-6" />
+                                </div>
+                                <h2 className="text-2xl md:text-3xl font-black text-slate-900 font-heading tracking-tight leading-none">
+                                    {isSignUp ? 'Create account' : 'Welcome back'}
+                                </h2>
+                                <p className="text-slate-500 text-sm mt-2">
+                                    {isSignUp ? 'Master the perfect resume and pass every interview.' : 'Sign in to access your modules & resume metrics.'}
+                                </p>
+                            </div>
+                            
+                            {/* Login/Signup Tabs */}
+                            <div className="flex p-1 bg-slate-100 rounded-xl">
+                                <button type="button" 
+                                    onClick={() => { setIsSignUp(false); setValidationErrors({ name: '', email: '', password: '', year: '' }); setTouched({ name: false, email: false, password: false, year: false }); setErrorMessage(''); }} 
+                                    className={`flex-1 py-2 text-xs md:text-sm font-bold rounded-lg transition-all ${!isSignUp ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                >
+                                    Log In
+                                </button>
+                                <button type="button" 
+                                    onClick={() => { setIsSignUp(true); setValidationErrors({ name: '', email: '', password: '', year: '' }); setTouched({ name: false, email: false, password: false, year: false }); setErrorMessage(''); }} 
+                                    className={`flex-1 py-2 text-xs md:text-sm font-bold rounded-lg transition-all ${isSignUp ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                >
+                                    Sign Up
+                                </button>
+                            </div>
+                            
+                            {/* Scrollable Form */}
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <AnimatePresence mode="wait">
+                                    {isSignUp && (
+                                        <motion.div 
+                                            key="signup-fields"
+                                            initial={{ height: 0, opacity: 0 }} 
+                                            animate={{ height: 'auto', opacity: 1 }} 
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="space-y-4 overflow-hidden"
+                                        >
+                                            <div>
+                                                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Full Name</label>
+                                                <input 
+                                                    type="text" 
+                                                    className={`w-full px-4 py-2.5 bg-white border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none transition-all ${validationErrors.name && touched.name ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400' : 'border-slate-200'}`} 
+                                                    placeholder="e.g. Lara Croft" 
+                                                    value={name} 
+                                                    onChange={(e) => handleFieldChange('name', e.target.value)} 
+                                                    onBlur={() => handleFieldBlur('name')}
+                                                    disabled={isSubmitting} 
+                                                />
+                                                {validationErrors.name && touched.name && (
+                                                    <p className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" /> {validationErrors.name}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            
+                                            <div>
+                                                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Academic Year</label>
+                                                <select
+                                                    className={`w-full px-4 py-2.5 bg-white border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none transition-all ${validationErrors.year && touched.year ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400' : 'border-slate-200'}`}
+                                                    value={selectedYear}
+                                                    onChange={(e) => handleFieldChange('year', e.target.value)}
+                                                    onBlur={() => handleFieldBlur('year')}
+                                                    disabled={isSubmitting}
+                                                >
+                                                    <option value="" disabled>Select academic year</option>
+                                                    {YEAR_OPTIONS.map((year) => (
+                                                        <option key={year.value} value={year.value}>
+                                                            {year.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {validationErrors.year && touched.year && (
+                                                    <p className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" /> {validationErrors.year}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                                
+                                <div>
+                                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Email Address</label>
+                                    <input 
+                                        type="email" 
+                                        className={`w-full px-4 py-2.5 bg-white border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none transition-all ${validationErrors.email && touched.email ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400' : 'border-slate-200'}`} 
+                                        placeholder="you@domain.com" 
+                                        value={email} 
+                                        onChange={(e) => handleFieldChange('email', e.target.value)} 
+                                        onBlur={() => handleFieldBlur('email')}
+                                        disabled={isSubmitting} 
+                                    />
+                                    {validationErrors.email && touched.email && (
+                                        <p className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" /> {validationErrors.email}
+                                        </p>
+                                    )}
+                                </div>
+                                
+                                <div className="relative">
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Password</label>
+                                        {!isSignUp && (
+                                            <a href="#" className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
+                                                Forgot password?
+                                            </a>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <input 
+                                            type={showPassword ? "text" : "password"} 
+                                            className={`w-full pl-4 pr-10 py-2.5 bg-white border rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-sm outline-none transition-all ${validationErrors.password && touched.password ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400' : 'border-slate-200'}`} 
+                                            placeholder="••••••••" 
+                                            value={password} 
+                                            onChange={(e) => handleFieldChange('password', e.target.value)} 
+                                            onBlur={() => handleFieldBlur('password')}
+                                            disabled={isSubmitting} 
+                                        />
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        </button>
+                                    </div>
+                                    {validationErrors.password && touched.password && (
+                                        <p className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" /> {validationErrors.password}
+                                        </p>
+                                    )}
+                                </div>
+                                
+                                {errorMessage && (
+                                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                                        <p className="text-red-600 text-xs font-semibold">{errorMessage}</p>
+                                    </div>
+                                )}
+                                
+                                <button type="submit" disabled={isSubmitting} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/20 disabled:opacity-70 flex items-center justify-center gap-2">
+                                    {isSubmitting ? (
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    ) : (
+                                        <>
+                                            {isSignUp ? 'Create Account' : 'Sign In'}
+                                            <ArrowRight size={16} />
+                                        </>
+                                    )}
+                                </button>
+                                
+                                <div className="relative flex items-center py-2">
+                                    <div className="flex-grow border-t border-slate-200"></div>
+                                    <span className="shrink-0 mx-4 text-slate-400 text-[10px] font-bold uppercase tracking-wider">Or continue with</span>
+                                    <div className="flex-grow border-t border-slate-200"></div>
+                                </div>
+                                
+                                <div className="flex justify-center w-full min-h-[44px]">
+                                    <div ref={googleButtonRef} className="w-full flex justify-center [&>div]:w-full [&>div]:max-w-xs [&_iframe]:mx-auto" />
+                                </div>
+                            </form>
+                            
+                            {/* Footer note */}
+                            <p className="text-center text-[10px] text-slate-400 leading-normal">
+                                By signing up, you agree to our <a href="#" className="underline hover:text-slate-600">Terms of Service</a> and <a href="#" className="underline hover:text-slate-600">Privacy Policy</a>.
+                            </p>
                         </div>
-
-                        <div className="flex justify-center w-full"><div ref={googleButtonRef} /></div>
-                    </form>
+                    </div>
                 </motion.div>
             </motion.div>
         </AnimatePresence>
