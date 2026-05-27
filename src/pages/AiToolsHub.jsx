@@ -18,9 +18,9 @@ const aiTools = [
         description: 'Simulate a realistic live interview with our AI hiring manager.',
         path: '/interview',
         icon: Mic,
-        color: 'text-violet-600',
-        bg: 'bg-violet-100',
-        border: 'border-violet-200'
+        color: 'text-primary-600 dark:text-primary-400',
+        bg: 'bg-primary-50 dark:bg-primary-950/20',
+        border: 'border-primary-100 dark:border-primary-900/20'
     },
     {
         id: 'resume-tailor',
@@ -28,9 +28,9 @@ const aiTools = [
         description: 'Upload your PDF and tailor it to any Job Description using Groq AI with 10 premium single-page style presets.',
         path: '/resume-tailor',
         icon: Briefcase,
-        color: 'text-purple-600',
-        bg: 'bg-purple-100',
-        border: 'border-purple-200'
+        color: 'text-violet-600 dark:text-violet-400',
+        bg: 'bg-violet-50 dark:bg-violet-950/20',
+        border: 'border-violet-100 dark:border-violet-900/20'
     },
     {
         id: 'resume-analyzer',
@@ -38,9 +38,9 @@ const aiTools = [
         description: 'Scan your resume against any Job Description to calculate your dynamic ATS match score and keyword gaps.',
         path: '/resume',
         icon: FileText,
-        color: 'text-blue-600',
-        bg: 'bg-blue-100',
-        border: 'border-blue-200'
+        color: 'text-indigo-600 dark:text-indigo-400',
+        bg: 'bg-indigo-50 dark:bg-indigo-950/20',
+        border: 'border-indigo-100 dark:border-indigo-900/20'
     },
     {
         id: 'email-writer',
@@ -48,9 +48,9 @@ const aiTools = [
         description: 'Draft the perfect follow-up or cold email instantly.',
         path: '/email-writer',
         icon: Mail,
-        color: 'text-indigo-600',
-        bg: 'bg-indigo-100',
-        border: 'border-indigo-200'
+        color: 'text-fuchsia-600 dark:text-fuchsia-400',
+        bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/20',
+        border: 'border-fuchsia-100 dark:border-fuchsia-900/20'
     },
     {
         id: 'blog-writer',
@@ -58,9 +58,9 @@ const aiTools = [
         description: 'Craft high-quality professional articles or blog posts.',
         path: '/blog-writer',
         icon: PenTool,
-        color: 'text-emerald-600',
-        bg: 'bg-emerald-100',
-        border: 'border-emerald-200'
+        color: 'text-emerald-600 dark:text-emerald-400',
+        bg: 'bg-emerald-50 dark:bg-emerald-950/20',
+        border: 'border-emerald-100 dark:border-emerald-900/20'
     }
 ];
 
@@ -74,18 +74,18 @@ export default function AiToolsHub() {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white shadow-xl relative overflow-hidden"
+                    className="w-full bg-slate-950 dark:bg-slate-900 rounded-3xl p-8 md:p-12 text-white shadow-premium border border-slate-900 dark:border-slate-800 relative overflow-hidden bg-grid-pattern bg-opacity-90"
                 >
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-[100px] opacity-30 -translate-y-1/2 translate-x-1/4"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500 rounded-full blur-[100px] opacity-25 -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
                     <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                         <div className="max-w-2xl">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-extrabold tracking-widest uppercase mb-6 backdrop-blur-md">
-                                <Sparkles size={14} className="fill-indigo-400" /> AI Command Center
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-300 text-[10px] font-bold tracking-widest uppercase mb-6 backdrop-blur-md">
+                                <Sparkles size={12} className="fill-primary-400" /> AI Command Center
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-4">
+                            <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight mb-4 font-heading">
                                 Supercharge your Career
                             </h1>
-                            <p className="text-slate-300 text-lg font-medium leading-relaxed">
+                            <p className="text-slate-350 text-base sm:text-lg font-medium leading-relaxed">
                                 Access our fully integrated suite of generative AI tools to practice skills, optimize applications, and land your next role.
                             </p>
                         </div>
@@ -103,28 +103,28 @@ export default function AiToolsHub() {
                         >
                             <Link 
                                 to={tool.path}
-                                className="group flex flex-col h-full bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] dark:shadow-none p-8 hover:-translate-y-1 hover:shadow-lg hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300"
+                                className="group flex flex-col h-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-premium p-8 hover:-translate-y-1 hover:shadow-soft hover:border-primary-200 dark:hover:border-primary-900 transition-all duration-300"
                             >
                                 <div className="flex items-start justify-between mb-8">
-                                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border shadow-sm ${tool.bg} dark:bg-opacity-10 ${tool.border} dark:border-opacity-20 ${tool.color} group-hover:scale-110 transition-transform duration-300`}>
-                                        <tool.icon size={28} />
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shadow-soft ${tool.bg} ${tool.border} ${tool.color} group-hover:scale-105 transition-all duration-300`}>
+                                        <tool.icon size={22} />
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:bg-slate-900 dark:group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300">
-                                        <ArrowRight size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                                    <div className="w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-450 dark:text-slate-500 group-hover:bg-primary-600 group-hover:text-white group-hover:border-primary-600 flex items-center justify-center transition-colors duration-300 shadow-soft">
+                                        <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                                     </div>
                                 </div>
                                 
                                 <div className="flex flex-col flex-1">
-                                    <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-3">
+                                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2.5 font-heading">
                                         {tool.title}
                                     </h3>
-                                    <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                    <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium leading-relaxed">
                                         {tool.description}
                                     </p>
                                 </div>
                                 
-                                <div className="mt-8 flex items-center gap-2 text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                                    <Zap size={16} className="fill-current" /> Initialize Module
+                                <div className="mt-8 flex items-center gap-2 text-[10px] font-bold text-slate-450 dark:text-slate-550 uppercase tracking-widest group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                                    <Zap size={14} className="fill-current" /> Initialize Module
                                 </div>
                             </Link>
                         </motion.div>
