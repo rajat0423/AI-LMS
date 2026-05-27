@@ -379,20 +379,63 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
 function Landing() {
     const [authOpen, setAuthOpen] = useState(false);
     const [authView, setAuthView] = useState('login');
+    const [activeTab, setActiveTab] = useState(0); // 0 = Choose Design, 1 = AI Customizer, 2 = ATS Score Check
+    const [selectedStyle, setSelectedStyle] = useState('corporate'); // corporate, academic, minimal
+    const [atsCounter, setAtsCounter] = useState(0);
 
     const openAuth = (view) => {
         setAuthView(view);
         setAuthOpen(true);
     };
 
+    // Trigger score gauge count up animation when active tab changes to ATS Score Check (tab 2)
+    useEffect(() => {
+        if (activeTab === 2) {
+            setAtsCounter(0);
+            let start = 0;
+            const end = 94;
+            const duration = 1200;
+            const increment = end / (duration / 16);
+            
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= end) {
+                    setAtsCounter(end);
+                    clearInterval(timer);
+                } else {
+                    setAtsCounter(Math.floor(start));
+                }
+            }, 16);
+            return () => clearInterval(timer);
+        }
+    }, [activeTab]);
+
+    const stepsList = [
+        {
+            title: '1. Select Premium Layout',
+            subtitle: 'Click visual presets to instantly style templates.',
+            desc: 'Choose from slate blue highlights, horizontal lines, or high-breathing whitespace presets that automatically adapt to your content.'
+        },
+        {
+            title: '2. Generate AI Customization',
+            subtitle: 'Polishes achievements using active STAR verbs.',
+            desc: 'Formulates achievements using quantifiable SDE verbs, injecting target skills into job description summaries.'
+        },
+        {
+            title: '3. Run ATS Score Check',
+            subtitle: 'Verifies keyword relevance against exact job requirements.',
+            desc: 'Scans your resume matching core keywords to calculate your dynamic, parseable match score.'
+        }
+    ];
+
     return (
-        <div className="min-h-screen bg-slate-50 font-sans selection:bg-indigo-100 flex flex-col relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-indigo-100 flex flex-col relative overflow-hidden">
             <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialView={authView} />
             
-            {/* Background blobs */}
-            <div className="absolute top-0 left-0 w-full h-[600px] overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[120%] bg-indigo-100 rounded-full blur-[120px] opacity-60 mix-blend-multiply"></div>
-                <div className="absolute top-[20%] -left-[10%] w-[50%] h-[100%] bg-violet-100 rounded-full blur-[120px] opacity-60 mix-blend-multiply"></div>
+            {/* Background glowing blurred radial patterns */}
+            <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden -z-10 pointer-events-none">
+                <div className="absolute -top-[20%] -right-[10%] w-[65%] h-[120%] bg-blue-500/10 rounded-full blur-[140px] mix-blend-multiply dark:mix-blend-normal"></div>
+                <div className="absolute top-[10%] -left-[10%] w-[55%] h-[100%] bg-rose-500/5 rounded-full blur-[130px] mix-blend-multiply dark:mix-blend-normal"></div>
             </div>
 
             {/* Header */}
@@ -400,137 +443,416 @@ function Landing() {
                 <div className="flex items-center">
                     <img src="/logo.webp" alt="Aao Seekhe Live" className="h-10 w-auto" />
                 </div>
-                <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-                    <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
+                <div className="hidden md:flex items-center gap-8 text-sm font-extrabold text-slate-500 dark:text-slate-400">
+                    <a href="#features" className="hover:text-indigo-600 transition-colors uppercase tracking-widest text-[11px]">SaaS Features</a>
+                    <a href="#process" className="hover:text-indigo-600 transition-colors uppercase tracking-widest text-[11px]">Dynamic Workflow</a>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button onClick={() => openAuth('login')} className="text-sm font-bold text-slate-700 hover:text-indigo-600">Log in</button>
-                    <button onClick={() => openAuth('signup')} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-full hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20">Sign up</button>
+                    <button onClick={() => openAuth('login')} className="text-sm font-black text-slate-700 dark:text-slate-300 hover:text-indigo-600 transition-colors uppercase tracking-wider">Log in</button>
+                    <button onClick={() => openAuth('signup')} className="px-6 py-3 bg-indigo-600 text-white text-xs font-black rounded-full hover:bg-indigo-700 transition-colors uppercase tracking-widest shadow-lg shadow-indigo-600/25 active:scale-95 transition-transform">Get Started</button>
                 </div>
             </header>
 
-            {/* Hero Section */}
-            <main className="flex-1 max-w-7xl mx-auto px-6 pt-16 md:pt-24 pb-32 flex flex-col lg:flex-row items-center gap-16 z-10">
-                <div className="flex-1 text-center lg:text-left">
+            {/* HERO SECTION */}
+            <main className="flex-1 max-w-7xl mx-auto px-6 pt-12 md:pt-20 pb-28 flex flex-col lg:flex-row items-center gap-16 z-10 w-full">
+                
+                {/* Hero Left Content */}
+                <div className="flex-1 text-center lg:text-left flex flex-col gap-6 md:gap-8">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-widest rounded-full mb-6 shadow-sm">
-                            <Sparkles size={14} className="text-indigo-500" /> Introducing Aao Seekhe Live
+                        
+                        {/* Rating Star Badge */}
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-indigo-700 dark:text-indigo-400 text-xs font-black uppercase tracking-widest rounded-full mb-6 shadow-sm">
+                            <span className="flex items-center gap-0.5 text-amber-500 mr-1.5">
+                                ★★★★★
+                            </span>
+                            5-Star AI Platform
                         </div>
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 font-heading leading-[1.1] mb-6 tracking-tight">
-                            Your personal <br className="hidden lg:block"/>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600">career accelerator.</span>
+                        
+                        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-955 dark:text-white leading-[1.08] mb-6 tracking-tight font-heading">
+                            Create your perfect <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-rose-700 dark:from-blue-400 dark:via-indigo-400 dark:to-rose-400">career roadmap.</span>
                         </h1>
-                        <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                            Master interviews, optimize resumes, and craft perfect emails with real-time AI feedback. Stop guessing and start landing offers.
+                        <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold">
+                            Instantly tailor your resume with 10 premium layouts, optimize keywords with our ATS analyzer, and simulate voice interviews with live coach feedback.
                         </p>
+                        
+                        {/* Hero CTAs */}
                         <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                            <button onClick={() => openAuth('signup')} className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-2 text-lg active:scale-95">
-                                Get Started <ArrowRight size={20} />
+                            <button onClick={() => openAuth('signup')} className="w-full sm:w-auto px-8 py-4.5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/25 flex items-center justify-center gap-2.5 text-base uppercase tracking-widest active:scale-95">
+                                Create My Account <ArrowRight size={18} />
                             </button>
                         </div>
-                        <div className="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-slate-500 font-medium">
-                            <p>Begin your learning journey today.</p>
+                        
+                        <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs text-slate-500 dark:text-slate-500 font-bold uppercase tracking-widest">
+                            <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> Free to Onboard</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-350 dark:bg-slate-700 hidden sm:inline" />
+                            <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> ATS-Friendly Output</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-350 dark:bg-slate-700 hidden sm:inline" />
+                            <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> Automated Seeding</span>
                         </div>
+                        
                     </motion.div>
                 </div>
                 
-                {/* Hero Visual */}
-                <div className="flex-1 w-full max-w-lg lg:max-w-none relative perspective-1000">
-                    <motion.div initial={{ opacity: 0, rotateY: 10, rotateX: 10, scale: 0.9 }} animate={{ opacity: 1, rotateY: 0, rotateX: 0, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }}
-                        className="relative z-10 glass-panel rounded-3xl p-6 md:p-8 overflow-hidden transform-gpu border-white/60">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-white/10 -z-10"></div>
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
-                                <Bot size={24} className="text-indigo-600" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-slate-900">AI Interview Feedback</h3>
-                                <p className="text-xs text-emerald-600 font-bold uppercase tracking-widest mt-1">Live Processing</p>
-                            </div>
+                {/* HERO RIGHT: Interactive SaaS Product Preview Console */}
+                <div className="flex-1 w-full max-w-xl lg:max-w-none relative perspective-1000">
+                    
+                    {/* Floating Badges */}
+                    <div className="absolute -top-6 -left-6 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/80 p-4.5 rounded-2xl shadow-lg flex items-center gap-3 animate-pulse">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
+                            94%
                         </div>
-                        <div className="space-y-4">
-                            <div className="p-4 bg-white/60 rounded-2xl border border-white/50 backdrop-blur-md shadow-sm">
-                                <p className="text-sm font-semibold text-slate-700">"Tell me about a time you failed."</p>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">ATS Success Rate</p>
+                            <p className="text-xs font-black text-slate-800 dark:text-slate-200 mt-0.5">Optimized Shortlisting</p>
+                        </div>
+                    </div>
+
+                    <div className="absolute -bottom-6 -right-6 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/80 p-4.5 rounded-2xl shadow-lg flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                            <Bot size={20} className="text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">AI Interview Coach</p>
+                            <p className="text-xs font-black text-slate-800 dark:text-slate-200 mt-0.5">Instant Speech Metrics</p>
+                        </div>
+                    </div>
+
+                    <motion.div 
+                        initial={{ opacity: 0, rotateY: 8, rotateX: 6, scale: 0.96 }} 
+                        animate={{ opacity: 1, rotateY: 0, rotateX: 0, scale: 1 }} 
+                        transition={{ duration: 0.6 }}
+                        className="relative z-10 bg-white dark:bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-6"
+                    >
+                        {/* Terminal Header */}
+                        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-4 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <span className="w-3.5 h-3.5 rounded-full bg-rose-500" />
+                                <span className="w-3.5 h-3.5 rounded-full bg-amber-500" />
+                                <span className="w-3.5 h-3.5 rounded-full bg-emerald-500" />
+                                <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-2">aaoseekhe.live console</span>
                             </div>
-                            <div className="p-4 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-600/20 ml-8 relative">
-                                <span className="absolute -left-3 top-4 w-3 h-3 bg-indigo-600 rotate-45"></span>
-                                <p className="text-sm">I once missed a deadline because I underestimated the scope. I communicated early with stakeholders and learned to buffer time."</p>
-                            </div>
-                            <div className="p-4 bg-white/80 rounded-2xl border border-indigo-100 backdrop-blur-md shadow-md mr-8">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Zap size={14} className="text-amber-500 fill-amber-500" />
-                                    <span className="text-xs font-bold text-slate-800">Feedback</span>
-                                </div>
-                                <p className="text-xs text-slate-600 leading-relaxed">Strong STAR method structuring. Great that you focused on the learning outcome, showing accountability.</p>
-                            </div>
+                            <span className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/40 rounded-md border border-rose-200/50 dark:border-rose-900/30">
+                                SaaS Preview
+                            </span>
+                        </div>
+
+                        {/* Interactive Tab switchers */}
+                        <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl">
+                            {['Design', 'AI Customizer', 'ATS Gauge'].map((tab, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => setActiveTab(idx)}
+                                    className={`py-2 text-[11px] font-black uppercase tracking-wider rounded-lg transition-all ${activeTab === idx ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'}`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Dynamic Interactive Sheet content */}
+                        <div className="flex-1 min-h-[300px] bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800 p-5 rounded-2xl flex flex-col justify-between gap-4">
+                            <AnimatePresence mode="wait">
+                                
+                                {/* Step 0: Design Selector & Live Style Preview */}
+                                {activeTab === 0 && (
+                                    <motion.div 
+                                        key="step0" 
+                                        initial={{ opacity: 0, y: 10 }} 
+                                        animate={{ opacity: 1, y: 0 }} 
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex flex-col gap-4 h-full"
+                                    >
+                                        <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200/60 dark:border-slate-850">
+                                            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Switch Style:</span>
+                                            <div className="flex gap-2">
+                                                {['corporate', 'academic', 'minimal'].map((style) => (
+                                                    <button
+                                                        key={style}
+                                                        type="button"
+                                                        onClick={() => setSelectedStyle(style)}
+                                                        className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md border transition-all ${selectedStyle === style ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 dark:bg-slate-850 border-slate-200 dark:border-slate-750 text-slate-600 dark:text-slate-400'}`}
+                                                    >
+                                                        {style}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Styled Resume Preview Sheet card */}
+                                        <div className={`flex-1 p-5 rounded-xl border shadow-xs transition-all duration-350 ${
+                                            selectedStyle === 'corporate' ? 'bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-900 font-sans' :
+                                            selectedStyle === 'academic' ? 'bg-white dark:bg-slate-900 border-slate-350 dark:border-slate-750 font-serif' :
+                                            'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 font-sans text-center'
+                                        }`}>
+                                            <h4 className={`font-black text-slate-955 dark:text-white tracking-tight ${selectedStyle === 'minimal' ? 'text-xl' : 'text-lg'}`}>
+                                                Rajat Tripathi
+                                            </h4>
+                                            <p className={`text-[10px] font-black uppercase tracking-wider text-blue-700 dark:text-blue-400 mt-1 ${selectedStyle === 'academic' ? 'italic' : ''}`}>
+                                                Software Development Engineer
+                                            </p>
+                                            
+                                            <div className="w-full h-[1px] bg-slate-200 dark:bg-slate-800 my-3" />
+                                            
+                                            <div className={`space-y-2 text-left ${selectedStyle === 'minimal' ? 'text-center' : ''}`}>
+                                                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Experience</p>
+                                                <div className="pl-2 border-l-2 border-blue-500/20 dark:border-blue-500/40">
+                                                    <div className="flex justify-between items-center text-[10px] font-extrabold text-slate-850 dark:text-slate-205">
+                                                        <span>FastAPI Backend Developer</span>
+                                                        <span className="text-slate-400">2026 - Present</span>
+                                                    </div>
+                                                    <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">• Implemented dynamic statistical calculation engines in Postgres SQL.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {/* Step 1: AI Writing Optimization */}
+                                {activeTab === 1 && (
+                                    <motion.div 
+                                        key="step1" 
+                                        initial={{ opacity: 0, y: 10 }} 
+                                        animate={{ opacity: 1, y: 0 }} 
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex flex-col gap-4 justify-between h-full"
+                                    >
+                                        <div className="flex flex-col gap-2">
+                                            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Prompt Input</span>
+                                            <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-350 italic">
+                                                "Write a summary for SDE target JD, focusing on FastAPI development."
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-1 bg-slate-950 p-4 rounded-xl border border-slate-850 flex flex-col justify-between font-mono text-[11px] text-emerald-400 leading-relaxed shadow-inner">
+                                            <div>
+                                                <span className="text-slate-500">$ python compile_summary.py</span>
+                                                <div className="mt-2 text-white">
+                                                    [AI Processing summary...]
+                                                </div>
+                                                <motion.p 
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ delay: 0.4, duration: 1 }}
+                                                    className="mt-2 text-emerald-400"
+                                                >
+                                                    "Highly motivated Software Engineer specialized in FastAPI backend architecture, Docker containers, and dynamic Postgres schemas. Quantifiably boosted API shortcut response latency by 28%."
+                                                </motion.p>
+                                            </div>
+                                            <div className="text-[10px] text-slate-500 font-extrabold uppercase mt-2">
+                                                ✓ Injected ATS keywords: FastAPI, Postgres, API.
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {/* Step 2: ATS Matching Circle & Pill Tags */}
+                                {activeTab === 2 && (
+                                    <motion.div 
+                                        key="step2" 
+                                        initial={{ opacity: 0, y: 10 }} 
+                                        animate={{ opacity: 1, y: 0 }} 
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex flex-col sm:flex-row items-center gap-6 h-full justify-center"
+                                    >
+                                        {/* Custom circular score */}
+                                        <div className="relative w-28 h-28 flex items-center justify-center shrink-0">
+                                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                                <circle cx="50" cy="50" r="42" stroke="rgba(79, 70, 229, 0.1)" strokeWidth="8" fill="transparent" />
+                                                <motion.circle 
+                                                    initial={{ strokeDasharray: "0 264" }}
+                                                    animate={{ strokeDasharray: `${(atsCounter / 100) * 264} 264` }}
+                                                    transition={{ duration: 1.2 }}
+                                                    cx="50" cy="50" r="42" stroke="url(#console-grad)" strokeWidth="8" fill="transparent" strokeLinecap="round" 
+                                                />
+                                                <defs>
+                                                    <linearGradient id="console-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                        <stop offset="0%" stopColor="#4f46e5" />
+                                                        <stop offset="100%" stopColor="#ec4899" />
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg>
+                                            <div className="absolute flex flex-col items-center">
+                                                <span className="text-2xl font-black text-slate-900 dark:text-white">{atsCounter}%</span>
+                                                <span className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">ATS Match</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Keyword labels */}
+                                        <div className="flex flex-col gap-3 flex-1 min-w-0">
+                                            <div>
+                                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1.5">Matched Keywords</span>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {['FastAPI', 'React', 'SQL', 'Git'].map((kw) => (
+                                                        <span key={kw} className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-md text-[9px] font-bold border border-emerald-500/20">{kw}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1.5">Missing Checked</span>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {['Unit Testing', 'CI/CD'].map((kw) => (
+                                                        <span key={kw} className="px-2 py-0.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-md text-[9px] font-bold border border-rose-500/20">{kw}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Interactive Steps timelines descriptions */}
+                        <div className="p-4 bg-slate-100/50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-850 rounded-2xl flex flex-col gap-1.5">
+                            <h4 className="text-xs font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-widest">
+                                {stepsList[activeTab].title}
+                            </h4>
+                            <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                                {stepsList[activeTab].subtitle}
+                            </p>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+                                {stepsList[activeTab].desc}
+                            </p>
                         </div>
                     </motion.div>
-                    {/* Decorative elements */}
-                    <div className="absolute top-1/2 -right-8 w-24 h-24 bg-rose-400 rounded-full blur-[40px] opacity-20 -z-20"></div>
-                    <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-blue-400 rounded-full blur-[50px] opacity-30 -z-20"></div>
                 </div>
             </main>
 
-            {/* Features Bento Grid */}
-            <section id="features" className="bg-white py-24 border-t border-slate-100 relative">
+            {/* PROCESS METRICS TIMELINE */}
+            <section id="process" className="py-20 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-900 relative">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 font-heading mb-6 tracking-tight">An entire career center <br/> in your browser.</h2>
-                        <p className="text-lg text-slate-500">Everything you need to step confidently into your next big role. Powered by models built specifically for professional growth.</p>
+                    <div className="text-center max-w-2xl mx-auto mb-16 flex flex-col gap-4">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-955 dark:text-white font-heading">
+                            High-fidelity dynamic workflow.
+                        </h2>
+                        <p className="text-base sm:text-lg text-slate-505 dark:text-slate-400 font-semibold leading-relaxed">
+                            A seamless step-by-step career alignment pipeline designed to boost shortlist ratios and confidence.
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Big Card */}
-                        <div className="md:col-span-2 bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden group">
-                            <div className="absolute right-0 bottom-0 w-96 h-96 bg-indigo-500/20 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700"></div>
-                            <div className="relative z-10">
-                                <Bot size={32} className="text-indigo-400 mb-6" />
-                                <h3 className="text-3xl font-bold mb-4">AI Mock Interviews</h3>
-                                <p className="text-slate-400 text-lg max-w-md mb-8">Practice technical and behavioral mock interviews. Our AI provides instant feedback on your answers and suggests improvements.</p>
-                                <button onClick={() => openAuth('signup')} className="text-sm font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-2 hover:text-indigo-300 transition-colors">
-                                    Try it now <ChevronRight size={16} />
-                                </button>
-                            </div>
-                        </div>
-                        {/* Tall Card */}
-                        <div className="bg-indigo-50 rounded-[2rem] p-8 md:p-10 border border-indigo-100 relative overflow-hidden group">
-                            <div className="relative z-10 flex flex-col h-full justify-between">
-                                <div>
-                                    <FileText size={32} className="text-indigo-600 mb-6" />
-                                    <h3 className="text-2xl font-bold text-slate-900 mb-3">Resume Analyzer</h3>
-                                    <p className="text-slate-600">Upload your PDF resume and a target job description. Instantly receive an ATS score and keyword gaps.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {stepsList.map((step, idx) => (
+                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-8 rounded-3xl border border-slate-200/60 dark:border-slate-850 shadow-xs flex flex-col gap-4 relative group hover:-translate-y-1 transition-all duration-300">
+                                <div className="absolute top-6 right-6 text-5xl font-black text-indigo-600/10 dark:text-indigo-400/10 select-none">
+                                    0{idx + 1}
                                 </div>
-                                <div className="mt-8 font-heading text-5xl font-extrabold text-slate-300">ATS</div>
+                                <h3 className="text-lg font-black text-slate-955 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800/80 pb-3">
+                                    {step.title.split('. ')[1]}
+                                </h3>
+                                <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mt-1">{step.subtitle}</p>
+                                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">{step.desc}</p>
                             </div>
-                        </div>
-                        {/* Small Card 1 */}
-                        <div className="bg-white rounded-[2rem] p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                            <Brain size={28} className="text-violet-600 mb-5" />
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">Employability Analytics</h3>
-                            <p className="text-slate-500 text-sm">Track your progress and receive dynamic insights on communication and confidence levels.</p>
-                        </div>
-                        {/* Small Card 2 */}
-                        <div className="md:col-span-2 bg-rose-50 rounded-[2rem] p-8 border border-rose-100 flex flex-col sm:flex-row items-center gap-8">
-                            <div className="flex-1">
-                                <Sparkles size={28} className="text-rose-600 mb-4" />
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Email & Blog Writers</h3>
-                                <p className="text-slate-600">Draft professional emails, follow-ups, and thought-leadership blog posts instantly.</p>
-                            </div>
-                            <div className="w-full sm:w-64 h-32 bg-white rounded-xl shadow-sm border border-white flex items-center justify-center text-slate-300 font-medium p-4 text-xs italic">
-                                "Hi Team, thanks for the great interview today..."
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="bg-slate-900 py-12 text-center text-slate-400 text-sm">
-                <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-                    <div className="flex items-center">
-                        <img src="/logo.webp" alt="Aao Seekhe Live" className="h-8 opacity-80 invert brightness-200" />
+            {/* FEATURES BENTO GRID: Comprehensive LMS Career Center */}
+            <section id="features" className="py-24 border-t border-slate-200 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-950/40 relative">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center max-w-2xl mx-auto mb-16 flex flex-col gap-4">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-955 dark:text-white font-heading">
+                            SaaS Career Suite
+                        </h2>
+                        <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                            Everything you need to step confidently into your next big placement, powered by personalized AI algorithms.
+                        </p>
                     </div>
-                    <p>© 2026 Aao Seekhe Live. All rights reserved.</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                        
+                        {/* Big Card: Live AI Mock Interview Coach */}
+                        <div className="md:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden group border border-slate-850 flex flex-col justify-between min-h-[340px]">
+                            <div className="absolute right-0 bottom-0 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
+                            
+                            <div className="flex flex-col gap-4 relative z-10">
+                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+                                    <Mic size={22} />
+                                </div>
+                                <h3 className="text-2xl md:text-3xl font-black tracking-tight">AI Mock Interview Coach</h3>
+                                <p className="text-slate-400 text-sm sm:text-base max-w-lg font-semibold leading-relaxed">
+                                    Practice situational and technical placement interviews with LLaMA speech processing. Receive dynamic, granular coaching score suggestions based on speaking pacing.
+                                </p>
+                            </div>
+                            <button onClick={() => openAuth('signup')} className="mt-8 text-xs font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2 hover:text-indigo-300 transition-colors w-max relative z-10">
+                                Try Mock Coach <ChevronRight size={14} />
+                            </button>
+                        </div>
+
+                        {/* Card 2: Custom Resume Templates Sidebar presets */}
+                        <div className="bg-white dark:bg-slate-905 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 flex flex-col justify-between min-h-[340px] hover:border-slate-350 dark:hover:border-slate-700 transition-colors">
+                            <div className="flex flex-col gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center">
+                                    <Briefcase size={20} />
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-black text-slate-955 dark:text-white tracking-tight">Custom Resume Templates</h3>
+                                <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-semibold leading-relaxed">
+                                    Format documents using 10 premium typographical presets calibrated for a strict, ATS-friendly one-page print limit.
+                                </p>
+                            </div>
+                            <div className="mt-8 font-heading text-5xl font-black text-slate-200 dark:text-slate-805 select-none">
+                                PDF 10x
+                            </div>
+                        </div>
+
+                        {/* Card 3: ATS Score Calculator check */}
+                        <div className="bg-white dark:bg-slate-905 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 flex flex-col justify-between min-h-[220px] hover:border-slate-350 dark:hover:border-slate-700 transition-colors">
+                            <div className="flex flex-col gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20 flex items-center justify-center">
+                                    <FileText size={18} />
+                                </div>
+                                <h3 className="text-lg sm:text-xl font-black text-slate-955 dark:text-white tracking-tight">ATS Score Calculator</h3>
+                                <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold leading-relaxed">
+                                    Perform keyword density scans against job descriptions to dynamically identify formatting gaps.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Card 4: Email outreach writer */}
+                        <div className="md:col-span-2 bg-indigo-50 dark:bg-slate-905 rounded-[2.5rem] p-8 border border-indigo-100 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-8 justify-between hover:border-indigo-200 dark:hover:border-slate-700 transition-colors">
+                            <div className="flex-1 flex flex-col gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-600 border border-indigo-600/20 flex items-center justify-center">
+                                    <Sparkles size={18} className="fill-indigo-400" />
+                                </div>
+                                <h3 className="text-lg sm:text-xl font-black text-slate-955 dark:text-white tracking-tight">Email outreach & Blog SaaS</h3>
+                                <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-semibold leading-relaxed">
+                                    Draft follow-ups, cold cover letters, and thought-leadership SDE blog posts instantly with Groq AI writer integrations.
+                                </p>
+                            </div>
+                            <div className="w-full sm:w-64 h-32 bg-white dark:bg-slate-950 rounded-2xl shadow-inner border border-slate-100 dark:border-slate-850 flex items-center justify-center text-slate-500 dark:text-slate-500 font-semibold p-4 text-xs italic leading-relaxed text-center">
+                                "Hi placement team, thank you for organizing the technical mock session today..."
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            {/* BOTTOM CONVERSION HERO ACTION CTA */}
+            <section className="bg-slate-950 py-20 text-center relative overflow-hidden border-t border-slate-900">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+                <div className="relative z-10 max-w-2xl mx-auto px-6 flex flex-col items-center gap-6">
+                    <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
+                        Ready to accelerate your professional career?
+                    </h2>
+                    <p className="text-slate-400 text-sm sm:text-base font-semibold leading-relaxed">
+                        Join placement students today. Upload your resume, configure baseline anxiety assessments, and test speaking flow in minutes.
+                    </p>
+                    <button onClick={() => openAuth('signup')} className="mt-4 px-10 py-4.5 bg-white text-slate-950 font-black rounded-2xl hover:bg-slate-100 transition-all shadow-xl active:scale-95 text-base uppercase tracking-widest">
+                        Get Started Free
+                    </button>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="bg-slate-950 py-12 text-slate-500 text-xs border-t border-slate-900">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center">
+                        <img src="/logo.webp" alt="Aao Seekhe Live" className="h-8 opacity-75 invert brightness-200" />
+                    </div>
+                    <p className="font-semibold text-center sm:text-right">© 2026 Aao Seekhe Live. All rights reserved.</p>
                 </div>
             </footer>
         </div>
