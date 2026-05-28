@@ -14,7 +14,7 @@ function normalizeLocalApiBaseUrl(baseUrl) {
 }
 
 export const API_BASE_URL = normalizeLocalApiBaseUrl(
-  configuredApiBaseUrl || (isLocalHost ? 'http://127.0.0.1:8000' : '')
+  configuredApiBaseUrl || (isLocalHost ? 'http://127.0.0.1:8000' : 'https://ai-lms-a9f4.onrender.com')
 );
 
 // Log a warning in development if the URL is missing
