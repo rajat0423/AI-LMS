@@ -38,7 +38,7 @@ const TEMPLATES = [
 ];
 
 export default function ResumeTailor() {
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const [resumeFile, setResumeFile] = useState(null);
     const [jdText, setJdText] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -141,59 +141,61 @@ export default function ResumeTailor() {
             console.error("Resume tailoring failed:", error);
             alert(`AI Resume Tailoring failed: ${error.message}. Returning pre-tailored fallback for demonstration.`);
             // Secure fallback tailored to SDE role
+            const userName = user?.name || "Student Candidate";
+            const userEmail = user?.email || "candidate@domain.com";
             setTailoredData({
                 personal_info: {
-                    name: "Rajat Tripathi",
+                    name: userName,
                     title: "Software Development Engineer (SDE) - AI & Full Stack",
-                    email: "trajat905@gmail.com",
-                    phone: "+91 88282 17021",
-                    location: "Delhi, India",
-                    linkedin: "https://www.linkedin.com/in/rajat-tripathi-a048a5295",
-                    github: "https://github.com/rajat0423"
+                    email: userEmail,
+                    phone: "+91 99999 99999",
+                    location: "India",
+                    linkedin: "https://linkedin.com",
+                    github: "https://github.com"
                 },
                 summary: "Results-driven Software Engineer with hands-on experience building highly scalable full-stack applications and intelligent AI services. Expert in Python, FastAPI, and React, specializing in system optimizations, background multitasking, and deploying high-performance REST APIs aligned with strict product goals.",
                 skills: ["Python", "FastAPI", "React.js", "JavaScript (ES6+)", "SQLAlchemy", "PostgreSQL", "Groq AI Llama API", "Git", "GitHub Actions", "Docker", "Tailwind CSS", "RESTful APIs", "Agile Methodologies"],
                 experience: [
                     {
-                        company: "Aao Seekhe Live",
-                        role: "Full Stack SDE Intern",
-                        location: "Remote, India",
+                        company: "Global Tech Solutions",
+                        role: "Software Engineering Intern",
+                        location: "Remote",
                         start_date: "Jan 2025",
                         end_date: "Present",
                         bullets: [
-                            "Designed and implemented high-performance REST APIs in FastAPI, cutting server start-up and database seeding times by 40% using background multitasking.",
-                            "Built and deployed a continuous liveness uptime monitor using GitHub Actions, ensuring 99.99% availability of the Render container service.",
+                            "Designed and implemented high-performance REST APIs in FastAPI, cutting server start-up and database operations times by 40% using background multitasking.",
+                            "Built and deployed a continuous liveness uptime monitor using GitHub Actions, ensuring 99.99% availability of the container service.",
                             "Collaborated in an agile team to design ATS-friendly interactive user interfaces using React, framer-motion, and Tailwind CSS."
                         ]
                     },
                     {
-                        company: "Personal Projects Portfolio",
+                        company: "Technical Development Portfolio",
                         role: "Lead Developer",
-                        location: "Delhi, India",
+                        location: "India",
                         start_date: "Jun 2024",
                         end_date: "Dec 2024",
                         bullets: [
-                            "Architected AcuMedic, a digital healthcare assistant using React, optimizing component state updates for rapid page transitions.",
-                            "Built AI Rasoi, a smart recipe generator using generative AI, providing responsive mobile-first layouts and print-perfect stylesheets."
+                            "Architected web application assistants using React, optimizing component state updates for rapid page transitions.",
+                            "Built smart recipe generators using generative AI, providing responsive mobile-first layouts and print-perfect stylesheets."
                         ]
                     }
                 ],
                 education: [
                     {
-                        school: "Delhi Technological University (DTU)",
+                        school: "Technical University",
                         degree: "Bachelor of Technology in Computer Science & Engineering",
-                        location: "Delhi, India",
+                        location: "India",
                         start_date: "Aug 2022",
                         end_date: "Jul 2026",
-                        gpa: "8.8/10"
+                        gpa: "8.5/10"
                     }
                 ],
                 projects: [
                     {
-                        title: "Aao Seekhe Live AI-LMS Platform",
+                        title: "Interactive AI-LMS Platform",
                         technologies: ["React.js", "FastAPI", "PostgreSQL", "Groq AI"],
                         bullets: [
-                            "Designed a premium Zety-style Interactive Resume Builder that extracts resume text and aligns it dynamically with any target Job Description.",
+                            "Designed a premium interactive Resume Builder that extracts resume text and aligns it dynamically with any target Job Description.",
                             "Engineered a responsive split-screen preview workspace allowing real-time CSS style changes and instant print-perfect PDF compiles."
                         ]
                     }
