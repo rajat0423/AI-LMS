@@ -3,7 +3,7 @@ import { useAuth } from '../context/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Bot, Sparkles, Brain, CheckCircle2, Eye, EyeOff, 
-    ArrowRight, Mic, FileText, Zap, ChevronRight, PlayCircle, X
+    ArrowRight, Mic, FileText, Zap, ChevronRight, PlayCircle, X, Briefcase
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
