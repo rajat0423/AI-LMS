@@ -194,6 +194,17 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
         return !Object.values(errors).some(error => error !== '');
     };
 
+    const selectedYearRef = useRef('');
+    const isSignUpRef = useRef(isSignUp);
+
+    useEffect(() => {
+        selectedYearRef.current = selectedYear;
+    }, [selectedYear]);
+
+    useEffect(() => {
+        isSignUpRef.current = isSignUp;
+    }, [isSignUp]);
+
     useEffect(() => {
         if (!isOpen || !GOOGLE_CLIENT_ID) return;
         let isMounted = true;
@@ -206,13 +217,16 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                     client_id: GOOGLE_CLIENT_ID,
                     callback: async ({ credential }) => {
                         if (!credential) return;
-                        if (isSignUp && !selectedYear) {
+                        const currentIsSignUp = isSignUpRef.current;
+                        const currentYear = selectedYearRef.current;
+                        if (currentIsSignUp && !currentYear) {
                             setErrorMessage('Please select your academic year from the dropdown first to complete your sign-up.');
                             return;
                         }
                         setIsSubmitting(true);
+                        setErrorMessage('');
                         try {
-                            await loginWithGoogle({ credential, year: isSignUp ? Number(selectedYear) : undefined });
+                            await loginWithGoogle({ credential, year: currentIsSignUp ? Number(currentYear) : undefined });
                         } catch (error) {
                             setErrorMessage(error.message || 'Google sign-in failed.');
                         } finally {
@@ -223,11 +237,11 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                 google.accounts.id.renderButton(googleButtonRef.current, {
                     theme: 'outline', size: 'large', type: 'standard', width: 320,
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Google button rendering error:", e); }
         };
-        setTimeout(renderGoogle, 100);
+        setTimeout(renderGoogle, 200);
         return () => { isMounted = false; };
-    }, [isOpen, isSignUp, selectedYear]);
+    }, [isOpen]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
