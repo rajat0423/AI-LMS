@@ -732,12 +732,22 @@ def tailor_resume(
     )
 
     try:
-        raw = _call_groq(
-            system_prompt=system_prompt,
-            user_prompt=user_prompt,
-            temperature=0.3,
-            max_tokens=2500,
-        )
+        try:
+            raw = _call_groq(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                model="llama-3.3-70b-versatile",
+                temperature=0.3,
+                max_tokens=3000,
+            )
+        except Exception as groq_err_70b:
+            raw = _call_groq(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                model="llama-3.1-8b-instant",
+                temperature=0.3,
+                max_tokens=2500,
+            )
         data = _parse_json_response(raw)
         
         # Build validated Pydantic object
