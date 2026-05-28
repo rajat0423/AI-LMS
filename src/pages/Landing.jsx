@@ -206,6 +206,10 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                     client_id: GOOGLE_CLIENT_ID,
                     callback: async ({ credential }) => {
                         if (!credential) return;
+                        if (isSignUp && !selectedYear) {
+                            setErrorMessage('Please select your academic year from the dropdown first to complete your sign-up.');
+                            return;
+                        }
                         setIsSubmitting(true);
                         try {
                             await loginWithGoogle({ credential, year: isSignUp ? Number(selectedYear) : undefined });
@@ -272,12 +276,7 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                         {/* Top Header Section inside Showcase */}
                         <div className="relative z-10">
                             <div className="flex items-center gap-2 mb-6">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-                                    <Sparkles className="w-5 h-5 text-white animate-pulse" />
-                                </div>
-                                <span className="font-heading font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-white to-violet-200">
-                                    Aao Seekhe
-                                </span>
+                                <img src="/logo.webp" alt="Aao Seekhe Live" className="h-10 w-auto" />
                             </div>
                             <h3 className="text-3xl font-black font-heading leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">
                                 Empowering Your <br/>Career Journey
@@ -698,7 +697,7 @@ function Landing() {
                                         exit={{ opacity: 0, y: -10 }}
                                         className="flex flex-col gap-4 h-full"
                                     >
-                                        <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200/60 dark:border-slate-850">
+                                        <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200/60 dark:border-slate-800">
                                             <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Switch Style:</span>
                                             <div className="flex gap-2">
                                                 {['corporate', 'academic', 'minimal'].map((style) => (
@@ -706,7 +705,7 @@ function Landing() {
                                                         key={style}
                                                         type="button"
                                                         onClick={() => setSelectedStyle(style)}
-                                                        className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md border transition-all ${selectedStyle === style ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 dark:bg-slate-850 border-slate-200 dark:border-slate-750 text-slate-600 dark:text-slate-400'}`}
+                                                        className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md border transition-all ${selectedStyle === style ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}
                                                     >
                                                         {style}
                                                     </button>
@@ -732,7 +731,7 @@ function Landing() {
                                             <div className={`space-y-2 text-left ${selectedStyle === 'minimal' ? 'text-center' : ''}`}>
                                                 <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Experience</p>
                                                 <div className="pl-2 border-l-2 border-blue-500/20 dark:border-blue-500/40">
-                                                    <div className="flex justify-between items-center text-[10px] font-extrabold text-slate-850 dark:text-slate-205">
+                                                    <div className="flex justify-between items-center text-[10px] font-extrabold text-slate-800 dark:text-slate-200">
                                                         <span>FastAPI Backend Developer</span>
                                                         <span className="text-slate-400">2026 - Present</span>
                                                     </div>
@@ -759,7 +758,7 @@ function Landing() {
                                             </div>
                                         </div>
 
-                                        <div className="flex-1 bg-slate-950 p-4 rounded-xl border border-slate-850 flex flex-col justify-between font-mono text-[11px] text-emerald-400 leading-relaxed shadow-inner">
+                                        <div className="flex-1 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between font-mono text-[11px] text-emerald-400 leading-relaxed shadow-inner">
                                             <div>
                                                 <span className="text-slate-500">$ python compile_summary.py</span>
                                                 <div className="mt-2 text-white">
@@ -839,7 +838,7 @@ function Landing() {
                         </div>
 
                         {/* Interactive Steps timelines descriptions */}
-                        <div className="p-4 bg-slate-100/50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-850 rounded-2xl flex flex-col gap-1.5">
+                        <div className="p-4 bg-slate-100/50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col gap-1.5">
                             <h4 className="text-xs font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-widest">
                                 {stepsList[activeTab].title}
                             </h4>
@@ -868,7 +867,7 @@ function Landing() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {stepsList.map((step, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-8 rounded-3xl border border-slate-200/60 dark:border-slate-850 shadow-xs flex flex-col gap-4 relative group hover:-translate-y-1 transition-all duration-300">
+                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-8 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-xs flex flex-col gap-4 relative group hover:-translate-y-1 transition-all duration-300">
                                 <div className="absolute top-6 right-6 text-5xl font-black text-indigo-600/10 dark:text-indigo-400/10 select-none">
                                     0{idx + 1}
                                 </div>
@@ -898,7 +897,7 @@ function Landing() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                         
                         {/* Big Card: Live AI Mock Interview Coach */}
-                        <div className="md:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden group border border-slate-850 flex flex-col justify-between min-h-[340px]">
+                        <div className="md:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden group border border-slate-800 flex flex-col justify-between min-h-[340px]">
                             <div className="absolute right-0 bottom-0 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
                             
                             <div className="flex flex-col gap-4 relative z-10">
@@ -955,7 +954,7 @@ function Landing() {
                                     Draft follow-ups, cold cover letters, and thought-leadership SDE blog posts instantly with Groq AI writer integrations.
                                 </p>
                             </div>
-                            <div className="w-full sm:w-64 h-32 bg-white dark:bg-slate-950 rounded-2xl shadow-inner border border-slate-100 dark:border-slate-850 flex items-center justify-center text-slate-500 dark:text-slate-500 font-semibold p-4 text-xs italic leading-relaxed text-center">
+                            <div className="w-full sm:w-64 h-32 bg-white dark:bg-slate-950 rounded-2xl shadow-inner border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-500 font-semibold p-4 text-xs italic leading-relaxed text-center">
                                 "Hi placement team, thank you for organizing the technical mock session today..."
                             </div>
                         </div>

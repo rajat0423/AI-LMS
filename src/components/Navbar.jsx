@@ -110,7 +110,7 @@ function Navbar() {
                         {/* Search Cmd+K */}
                         <button 
                             onClick={() => setIsSearchOpen(true)}
-                            className="hidden md:flex items-center gap-2 pl-3 pr-2 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-xl text-slate-400 hover:text-slate-600 transition-colors group dark:bg-slate-900/40 dark:border-slate-850 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-slate-900/80"
+                            className="hidden md:flex items-center gap-2 pl-3 pr-2 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-xl text-slate-400 hover:text-slate-600 transition-colors group dark:bg-slate-900/40 dark:border-slate-800 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-slate-900/80"
                         >
                             <Search size={14} />
                             <span className="text-xs font-semibold pr-8 tracking-wide">Search...</span>

@@ -825,7 +825,7 @@ function AdminPanel() {
                                             <button
                                                 key={moduleItem.module_id}
                                                 onClick={() => { setSelectedModuleId(moduleItem.module_id); setActiveTab('content'); }}
-                                                className={`w-full rounded-xl border p-3 text-left transition ${selectedModuleId === moduleItem.module_id ? 'border-indigo-200 dark:border-indigo-900/35 bg-indigo-50 dark:bg-indigo-950/20' : 'border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850'}`}
+                                                className={`w-full rounded-xl border p-3 text-left transition ${selectedModuleId === moduleItem.module_id ? 'border-indigo-200 dark:border-indigo-900/35 bg-indigo-50 dark:bg-indigo-950/20' : 'border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                                             >
                                                 <div className="flex items-center justify-between gap-2">
                                                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{moduleItem.title}</span>
@@ -886,7 +886,7 @@ function AdminPanel() {
                                                                 setSelectedLessonId(unit.lesson_id);
                                                                 setExpandedUnits((prev) => ({ ...prev, [unit.lesson_id]: !prev[unit.lesson_id] }));
                                                             }}
-                                                            className={`flex w-full items-center justify-between gap-2 border-b p-3 text-left transition cursor-pointer ${isUnitSelected ? 'border-violet-200 dark:border-violet-900/30 bg-violet-50/70 dark:bg-violet-950/20' : 'border-slate-50 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-850/50'}`}
+                                                            className={`flex w-full items-center justify-between gap-2 border-b p-3 text-left transition cursor-pointer ${isUnitSelected ? 'border-violet-200 dark:border-violet-900/30 bg-violet-50/70 dark:bg-violet-950/20' : 'border-slate-50 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50'}`}
                                                         >
                                                             <div className="flex items-center gap-2 min-w-0">
                                                                 <motion.div
@@ -964,7 +964,7 @@ function AdminPanel() {
                                                                                         onClick={() => setSelectedLessonId(topic.lesson_id)}
                                                                                         className={`group relative flex items-center justify-between gap-2 rounded-lg border p-2.5 text-left transition cursor-pointer pl-6 ${isTopicSelected
                                                                                                 ? 'border-violet-200 dark:border-violet-900 bg-violet-50/80 dark:bg-violet-950/20 shadow-sm'
-                                                                                                : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-850'
+                                                                                                : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                                                                                             }`}
                                                                                     >
                                                                                         <div className="absolute left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-indigo-400 transition-colors" />
@@ -1160,7 +1160,7 @@ function AdminPanel() {
                             </label>
                         </div>
                         <div className="flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800 pt-4">
-                            <button type="button" onClick={() => setModuleModal(null)} className={`${buttonBase} bg-slate-100 dark:bg-slate-850 px-4 py-2 text-slate-700 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-800`}>Cancel</button>
+                            <button type="button" onClick={() => setModuleModal(null)} className={`${buttonBase} bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-700 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-800`}>Cancel</button>
                             <button type="submit" className={`${buttonBase} bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700`}><Save size={16} /> Save</button>
                         </div>
                     </form>
@@ -1247,7 +1247,7 @@ function AdminPanel() {
                                     setLessonModal(null);
                                     setLessonModalParentId(null);
                                 }}
-                                className={`${buttonBase} bg-slate-100 dark:bg-slate-850 px-4 py-2 text-slate-700 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-800`}
+                                className={`${buttonBase} bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-700 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-800`}
                             >
                                 Cancel
                             </button>

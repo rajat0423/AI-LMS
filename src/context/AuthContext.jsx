@@ -215,7 +215,7 @@ export function AuthProvider({ children }) {
     const loginWithGoogle = async ({ credential, year }) => {
         const payload = await requestJson('/api/v1/auth/google', {
             method: 'POST',
-            body: JSON.stringify({ credential }),
+            body: JSON.stringify({ credential, year }),
         });
 
         const nextUser = buildClientUser(payload.user, { year });

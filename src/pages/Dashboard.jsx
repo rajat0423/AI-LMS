@@ -105,7 +105,7 @@ export default function Dashboard() {
             status: userState.stats?.avg_accuracy ? 'Active Quiz' : 'No Quizzes',
             statusBg: userState.stats?.avg_accuracy 
                 ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-900/30' 
-                : 'bg-slate-100 text-slate-800 dark:bg-slate-850 dark:text-slate-350 border border-slate-200 dark:border-slate-800',
+                : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-800',
             tip: userState.stats?.avg_accuracy 
                 ? 'Excellent readiness! Keep completing quizzes.' 
                 : 'Take your first topic quiz to generate accuracy stats!',
@@ -121,7 +121,7 @@ export default function Dashboard() {
             status: userState.stats?.confidence_score > 60 ? 'High Accuracy' : 'Onboarding',
             statusBg: userState.stats?.confidence_score > 60 
                 ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-900/30' 
-                : 'bg-slate-100 text-slate-800 dark:bg-slate-850 dark:text-slate-350 border border-slate-200 dark:border-slate-800',
+                : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-800',
             tip: 'Derived from your recent module assessments and quizzes.',
             cta: null
         },
@@ -212,9 +212,7 @@ export default function Dashboard() {
                         <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450 rounded-full border border-rose-100 dark:border-rose-900/20">
                             LIVE ACTIVE
                         </span>
-                        <span className="text-xs font-bold text-slate-450 dark:text-slate-400 ml-1">
-                            Aao Seekhe Live
-                        </span>
+                        <img src="/logo.webp" alt="Aao Seekhe Live" className="h-6 w-auto ml-2" />
                     </div>
                     
                     <motion.h1 
@@ -224,7 +222,7 @@ export default function Dashboard() {
                     >
                         Welcome back, <span className="text-gradient-brand">{displayName}</span> 👋
                     </motion.h1>
-                    <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-450 max-w-xl font-medium leading-relaxed">
+                    <p className="mt-3 text-sm sm:text-base text-slate-650 dark:text-slate-300 max-w-xl font-medium leading-relaxed">
                         Ready to accelerate your career? Continue your personalized journey and complete today's goals.
                     </p>
                 </div>
@@ -237,7 +235,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                         <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Brand Status</p>
-                        <p className="text-xs font-bold text-slate-850 dark:text-slate-100">Aao Seekhe Live Engine</p>
+                        <img src="/logo.webp" alt="Aao Seekhe Live" className="h-4 w-auto mt-0.5" />
                     </div>
                 </div>
             </div>
@@ -269,12 +267,13 @@ export default function Dashboard() {
                     initial={{ opacity: 0, scale: 0.99 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.05, duration: 0.4 }}
-                    className="lg:col-span-8 bg-slate-950 dark:bg-slate-900 rounded-3xl p-6 sm:p-8 md:p-10 text-white relative overflow-hidden shadow-premium border border-slate-900 dark:border-slate-800"
+                    className="lg:col-span-8 bg-slate-950 dark:bg-slate-900 rounded-3xl p-6 sm:p-8 md:p-10 text-white relative overflow-hidden shadow-premium border border-slate-900 dark:border-slate-800 group"
                 >
-                    {/* Glowing light patterns */}
+                    {/* Glowing light patterns and premium background asset */}
+                    <div className="absolute inset-0 bg-cover bg-center opacity-35 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-[800ms] pointer-events-none" style={{ backgroundImage: "url('/dashboard_hero.png')" }} />
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-950/90 via-slate-900/95 to-indigo-950/80 z-0 pointer-events-none" />
                     <div className="absolute top-0 right-0 w-96 h-96 bg-primary-600 rounded-full blur-[140px] opacity-25 -translate-y-1/2 translate-x-1/3 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-600 rounded-full blur-[120px] opacity-15 translate-y-1/3 -translate-x-1/4 pointer-events-none" />
-                    <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
 
                     <div className="relative z-10 flex flex-col h-full justify-between gap-8 md:gap-12">
                         <div>
@@ -343,12 +342,12 @@ export default function Dashboard() {
 
                         <div className="grid grid-cols-2 gap-4 bg-slate-50/50 dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/80">
                             <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-bold text-slate-450 dark:text-slate-555 uppercase tracking-wider">Rank Tier</span>
-                                <span className="font-bold text-sm text-slate-850 dark:text-slate-100">Top 5% Learner</span>
+                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Rank Tier</span>
+                                <span className="font-bold text-sm text-slate-800 dark:text-slate-100">Top 5% Learner</span>
                             </div>
                             <div className="flex flex-col gap-0.5 pl-4 border-l border-slate-200 dark:border-slate-800">
-                                <span className="text-[10px] font-bold text-slate-455 dark:text-slate-555 uppercase tracking-wider">Career XP</span>
-                                <span className="font-extrabold text-sm text-slate-850 dark:text-slate-100">
+                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Career XP</span>
+                                <span className="font-extrabold text-sm text-slate-800 dark:text-slate-100">
                                     <AnimatedNumber value={streakCount > 0 ? streakCount * 150 : 0} duration={2} suffix=" XP" />
                                 </span>
                             </div>
@@ -395,7 +394,7 @@ export default function Dashboard() {
                                 )}
                             </div>
                             <div className="mt-1.5 flex items-center justify-between gap-2">
-                                <span className="text-[10px] font-bold tracking-wider uppercase text-slate-450 dark:text-slate-400">{m.label}</span>
+                                <span className="text-[10px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">{m.label}</span>
                                 <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate max-w-[200px]">
                                     {m.tip}
                                 </span>
@@ -432,7 +431,7 @@ export default function Dashboard() {
                         <Link
                             key={i}
                             to={a.path}
-                            className="group flex flex-col justify-between p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 hover:border-primary-300 dark:hover:border-primary-850 hover:bg-white dark:hover:bg-slate-950 hover:shadow-soft transition-all duration-300"
+                            className="group flex flex-col justify-between p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 hover:border-primary-300 dark:hover:border-primary-800 hover:bg-white dark:hover:bg-slate-950 hover:shadow-soft transition-all duration-300"
                         >
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
@@ -478,7 +477,7 @@ export default function Dashboard() {
                             <h3 className="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-800 dark:text-white flex items-center gap-2">
                                 <CheckCircle2 size={14} className="text-primary-600 dark:text-primary-400" /> Daily Career Missions
                             </h3>
-                            <p className="text-xs text-slate-550 dark:text-slate-450 font-medium mt-1">Cross off these tasks to earn career experience points.</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Cross off these tasks to earn career experience points.</p>
                         </div>
                         <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             {checklist.filter(item => item.completed).length} / {checklist.length} Completed
@@ -493,7 +492,7 @@ export default function Dashboard() {
                                 className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all ${
                                     item.completed 
                                         ? 'bg-emerald-50/30 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-900/20 text-emerald-800/70 dark:text-emerald-350/60 line-through' 
-                                        : 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800/80 text-slate-800 dark:text-slate-205 hover:border-primary-200 dark:hover:border-primary-900 hover:bg-slate-50/80 dark:hover:bg-slate-900/80 shadow-xs'
+                                        : 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:border-primary-200 dark:hover:border-primary-900 hover:bg-slate-50/80 dark:hover:bg-slate-900/80 shadow-xs'
                                 }`}
                             >
                                 <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 border transition-all ${
@@ -531,15 +530,15 @@ export default function Dashboard() {
                         <div className="relative border-l border-slate-100 dark:border-slate-800 pl-5 ml-2.5 space-y-5 py-2">
                             <div className="relative">
                                 <span className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-slate-950 bg-emerald-500" />
-                                <p className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider">2 hours ago</p>
+                                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">2 hours ago</p>
                                 <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-205 mt-0.5">Assessment calibrated successfully</h4>
-                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-450 font-medium leading-relaxed mt-0.5">Traits saved and initial scores set for module accuracy.</p>
+                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-0.5">Traits saved and initial scores set for module accuracy.</p>
                             </div>
                             <div className="relative">
                                 <span className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-slate-950 bg-primary-500" />
-                                <p className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider">Yesterday</p>
+                                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Yesterday</p>
                                 <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-205 mt-0.5">Joined Aao Seekhe Live platform</h4>
-                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-450 font-medium leading-relaxed mt-0.5">Onboarded into customized Year 3 curriculum successfully.</p>
+                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-0.5">Onboarded into customized Year 3 curriculum successfully.</p>
                             </div>
                         </div>
                     </div>
@@ -550,8 +549,8 @@ export default function Dashboard() {
                         return (
                             <div className={`p-4 rounded-2xl text-white shadow-soft flex items-center justify-between gap-4 mt-2 border ${
                                 isReportLocked 
-                                    ? 'bg-slate-950/95 dark:bg-slate-950 border-slate-100 dark:border-slate-800 text-slate-850 dark:text-slate-350 shadow-soft' 
-                                    : 'bg-gradient-to-br from-primary-600 to-primary-850 dark:from-slate-900 dark:to-slate-950 border-primary-500/20'
+                                    ? 'bg-slate-950 border-slate-100 dark:border-slate-800 text-slate-350 shadow-soft' 
+                                    : 'bg-gradient-to-br from-primary-600 to-primary-800 dark:from-slate-900 dark:to-slate-950 border-primary-500/20'
                             }`}>
                                 <div className="flex items-center gap-3">
                                     <div className={`w-9 h-9 rounded-xl backdrop-blur flex items-center justify-center border ${
@@ -568,7 +567,7 @@ export default function Dashboard() {
                                         <h4 className={`text-xs font-bold leading-tight ${isReportLocked ? 'text-slate-800 dark:text-slate-100' : 'text-white'}`}>
                                             {isReportLocked ? 'Employability Report Locked' : 'Employability Report Ready!'}
                                         </h4>
-                                        <p className={`text-[10px] font-semibold mt-0.5 ${isReportLocked ? 'text-slate-500 dark:text-slate-450' : 'text-white/70'}`}>
+                                        <p className={`text-[10px] font-semibold mt-0.5 ${isReportLocked ? 'text-slate-500 dark:text-slate-400' : 'text-white/70'}`}>
                                             {isReportLocked 
                                                 ? `Complete ${3 - completedModules} more module${3 - completedModules > 1 ? 's' : ''} to unlock` 
                                                 : 'Your career readiness report is available'

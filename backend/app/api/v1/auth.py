@@ -112,3 +112,73 @@ def student_progress(
         "total_lessons": stats.total_lessons,
         "completion_percentage": stats.completion_percentage,
     }
+
+
+from pydantic import BaseModel
+from typing import Optional
+
+class GoogleLoginRequest(BaseModel):
+    credential: str
+    year: Optional[int] = None
+
+
+@router.post("/google", response_model=Token, responses=error_responses(400, 401, 422, 500))
+def google_auth(request_data: GoogleLoginRequest, db: Session = Depends(get_db)):
+    """Authenticate or register a user with Google ID token."""
+    import base64
+    import json
+    import uuid
+    from app.core.security import hash_password
+    from app.models.role import Role
+    
+    credential = request_data.credential
+    year = request_data.year or 3
+    
+    try:
+        parts = credential.split(".")
+        if len(parts) != 3:
+            raise HTTPException(status_code=400, detail="Invalid Google token format")
+        payload_b64 = parts[1]
+        padded_payload = payload_b64 + "=" * (4 - len(payload_b64) % 4)
+        decoded_payload = base64.urlsafe_b64decode(padded_payload).decode("utf-8")
+        payload = json.loads(decoded_payload)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to parse Google credential: {str(e)}")
+        
+    email = payload.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Google token does not contain email")
+        
+    first_name = payload.get("given_name") or payload.get("name", "Student").split(" ")[0]
+    last_name = payload.get("family_name") or "Learner"
+    if len(payload.get("name", "").split(" ")) > 1 and not payload.get("family_name"):
+        last_name = " ".join(payload.get("name").split(" ")[1:])
+        
+    # Check if user already exists
+    user = user_service.get_user_by_email(db, email)
+    
+    if not user:
+        # Create a new user (Google Sign Up)
+        student_role = db.query(Role).filter(Role.role_name == "student").first()
+        if not student_role:
+            student_role = Role(role_name="student")
+            db.add(student_role)
+            db.commit()
+            db.refresh(student_role)
+            
+        user = User(
+            user_id=uuid.uuid4(),
+            email=email,
+            password_hash=hash_password(str(uuid.uuid4())),
+            first_name=first_name,
+            last_name=last_name,
+            year=year,
+            role_id=student_role.role_id,
+            is_active=True
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+    return _build_token_response(user)
+

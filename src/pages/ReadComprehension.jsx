@@ -295,7 +295,7 @@ export default function ReadComprehension() {
 
             {useLiveModules && modules.length > 1 && (
                 <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-450 dark:text-slate-500 mb-3">Modules In Your Year</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3">Modules In Your Year</p>
                     <div className="flex flex-wrap gap-3">
                         {modules.map((module, index) => (
                             <button
@@ -370,7 +370,7 @@ export default function ReadComprehension() {
                                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 flex items-center gap-2">
                                                 <Sparkles size={16} className="text-indigo-500 dark:text-indigo-400" /> Recommended AI Tools
                                             </h3>
-                                            <p className="text-xs text-slate-450 dark:text-slate-400 font-medium mt-1">Suggested for your current year and module stage.</p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Suggested for your current year and module stage.</p>
                                         </div>
                                         <Link to="/ai-tools" className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors">
                                             All Tools →
@@ -438,15 +438,15 @@ export default function ReadComprehension() {
                         </h3>
                         <div className="space-y-4">
                             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 px-4 py-3">
-                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-450 dark:text-slate-500">Assigned Year</p>
+                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Assigned Year</p>
                                 <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-1">{currentYearLabel}</p>
                             </div>
                             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 px-4 py-3">
-                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-450 dark:text-slate-500">Current Stage</p>
+                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Current Stage</p>
                                 <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-1">{data.stage}</p>
                             </div>
                             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 px-4 py-3">
-                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-450 dark:text-slate-500">Available Lessons</p>
+                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Available Lessons</p>
                                 <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-1">
                                     {data.lessons.length > 0 ? `${data.lessons.length} lesson${data.lessons.length !== 1 ? 's' : ''}` : `${data.practicePoints.length} practice goals`}
                                 </p>

@@ -882,7 +882,7 @@ export default function ResumeTailor() {
                                     {editMode && (
                                         <button 
                                             onClick={addExperience}
-                                            className="no-print flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-650 hover:text-indigo-850 cursor-pointer"
+                                            className="no-print flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:text-indigo-800 cursor-pointer"
                                         >
                                             <Plus size={12} /> Add Experience
                                         </button>
@@ -917,7 +917,7 @@ export default function ResumeTailor() {
                                                 <span contentEditable={editMode} suppressContentEditableWarning onBlur={(e) => handleNestedListChange('experience', expIdx, 'location', e.target.innerText)}>{exp.location}</span>
                                             </div>
 
-                                            <ul className="list-disc pl-5 mt-2 space-y-1 text-xs text-slate-655 leading-relaxed">
+                                            <ul className="list-disc pl-5 mt-2 space-y-1 text-xs text-slate-600 leading-relaxed">
                                                 {exp.bullets.map((bullet, bulletIdx) => (
                                                     <li key={bulletIdx} className="group/bullet relative pr-6">
                                                         <span
@@ -934,7 +934,7 @@ export default function ResumeTailor() {
                                                         {editMode && (
                                                             <button
                                                                 onClick={() => removeBullet('experience', expIdx, bulletIdx)}
-                                                                className="no-print absolute right-0 top-0.5 p-0.5 text-red-400 hover:text-red-650 opacity-0 group-bullet:opacity-100 transition-opacity cursor-pointer"
+                                                                className="no-print absolute right-0 top-0.5 p-0.5 text-red-400 hover:text-red-600 opacity-0 group-bullet:opacity-100 transition-opacity cursor-pointer"
                                                                 title="Remove Bullet"
                                                             >
                                                                 <X size={10} />
@@ -945,7 +945,7 @@ export default function ResumeTailor() {
                                                 {editMode && (
                                                     <button 
                                                         onClick={() => addBullet('experience', expIdx)}
-                                                        className="no-print mt-1 text-[9px] font-bold text-indigo-650 hover:underline flex items-center gap-0.5 cursor-pointer"
+                                                        className="no-print mt-1 text-[9px] font-bold text-indigo-600 hover:underline flex items-center gap-0.5 cursor-pointer"
                                                     >
                                                         <Plus size={10} /> Add Bullet Point
                                                     </button>
@@ -961,7 +961,7 @@ export default function ResumeTailor() {
                                     {editMode && (
                                         <button 
                                             onClick={addProject}
-                                            className="no-print flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-655 hover:text-indigo-850 cursor-pointer"
+                                            className="no-print flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:text-indigo-800 cursor-pointer"
                                         >
                                             <Plus size={12} /> Add Project
                                         </button>

@@ -20,7 +20,7 @@ function ConsistencyTree({ streak }) {
     }
 
     return (
-        <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-850 border border-slate-100 dark:border-slate-800/80 rounded-2xl shadow-sm relative overflow-hidden group transition-colors">
+        <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl shadow-sm relative overflow-hidden group transition-colors">
             <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${bg}`}>
                 <AnimatePresence mode="wait">
                     <motion.div
