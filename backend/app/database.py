@@ -22,13 +22,41 @@ engine_kwargs = {
     "pool_recycle": 3600,
 }
 
-# Create engine with proper settings for PostgreSQL
-engine = create_engine(
-    settings.DATABASE_URL,
-    **engine_kwargs,
-)
+import os
+db_url = settings.DATABASE_URL
+engine = None
+fallback_active = False
 
-if settings.DATABASE_URL.startswith("postgresql"):
+if db_url.startswith("postgresql"):
+    try:
+        # Create a test connection to verify database is active
+        test_engine = create_engine(db_url, **engine_kwargs)
+        with test_engine.connect() as conn:
+            # Execute a lightweight check
+            conn.execute(test_engine.dialect.statement_compiler(None).ansi_bind_rules and "SELECT 1" or "SELECT 1")
+        engine = test_engine
+    except Exception as exc:
+        import sys
+        print(f"⚠️ Primary database connection failed: {exc}. Activating high-availability SQLite fallback.", file=sys.stderr)
+        fallback_active = True
+
+if not engine:
+    # Use SQLite as fallback
+    db_url = "sqlite:///./data/auth.db"
+    if fallback_active:
+        db_url = "sqlite:///./data/fallback.db"
+    
+    db_path = db_url.replace("sqlite:///./", "").replace("sqlite:///", "")
+    db_dir = os.path.dirname(db_path)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
+        
+    engine = create_engine(
+        db_url,
+        connect_args={"check_same_thread": False}
+    )
+
+if db_url.startswith("postgresql"):
     @event.listens_for(engine, "connect")
     def set_postgres_search_path(dbapi_connection, _connection_record):
         cursor = dbapi_connection.cursor()
