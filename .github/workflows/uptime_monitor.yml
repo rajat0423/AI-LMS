@@ -2,8 +2,8 @@ name: Uptime Monitor & Keep Alive
 
 on:
   schedule:
-    # Run every 10 minutes to keep the Render Free instance awake (sleeps after 15m of inactivity)
-    - cron: '*/10 * * * *'
+    # Run every 5 minutes (maximum frequency allowed by GitHub Actions cron)
+    - cron: '*/5 * * * *'
   workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
 
 jobs:
@@ -11,14 +11,28 @@ jobs:
     name: Ping Render Backend
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Uptime Endpoint
+      - name: First Ping
         run: |
           echo "Pinging backend at https://ai-lms-a9f4.onrender.com/ping..."
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://ai-lms-a9f4.onrender.com/ping)
           echo "HTTP Status Code: $RESPONSE"
-          if [ "$RESPONSE" -eq 200 ]; then
-            echo "✅ Backend is awake and healthy!"
+          if [ "$RESPONSE" -eq 200 ] || [ "$RESPONSE" -eq 301 ] || [ "$RESPONSE" -eq 302 ] || [ "$RESPONSE" -eq 307 ] || [ "$RESPONSE" -eq 308 ]; then
+            echo "✅ Backend is awake!"
           else
-            echo "❌ Backend returned status code $RESPONSE or is unreachable!"
+            echo "⚠️ Backend returned HTTP status $RESPONSE"
+          fi
+
+      - name: Sleep 150 seconds
+        run: sleep 150
+
+      - name: Second Ping
+        run: |
+          echo "Pinging backend at https://ai-lms-a9f4.onrender.com/ping again..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://ai-lms-a9f4.onrender.com/ping)
+          echo "HTTP Status Code: $RESPONSE"
+          if [ "$RESPONSE" -eq 200 ] || [ "$RESPONSE" -eq 301 ] || [ "$RESPONSE" -eq 302 ] || [ "$RESPONSE" -eq 307 ] || [ "$RESPONSE" -eq 308 ]; then
+            echo "✅ Backend is awake!"
+          else
+            echo "❌ Backend returned HTTP status $RESPONSE"
             exit 1
           fi
