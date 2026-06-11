@@ -50,6 +50,20 @@ def create_user(
     db.commit()
     db.refresh(new_user)
     
+    # Auto-create active premium subscription
+    from app.models.subscription import Subscription
+    from datetime import datetime, timedelta
+    new_sub = Subscription(
+        user_id=new_user.user_id,
+        plan_type="premium",
+        status="active",
+        current_period_start=datetime.utcnow(),
+        current_period_end=datetime.utcnow() + timedelta(days=365)
+    )
+    db.add(new_sub)
+    db.commit()
+    db.refresh(new_user)
+    
     return new_user
 
 def get_user_by_email(db: Session, email: str) -> User | None:

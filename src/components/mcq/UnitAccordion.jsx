@@ -179,6 +179,10 @@ function UnitAccordion({
                                                                 hasPrevious={questionIndex > 0}
                                                                 hasNext={questionIndex < lastQuestionIndex}
                                                                 isSaving={pendingQuestionId === question.question_id}
+                                                                questions={visibleQuestions}
+                                                                currentIndex={questionIndex}
+                                                                onJumpToQuestion={(idx) => onQuestionIndexChange(topic.lesson_id, idx)}
+                                                                submissions={submissions}
                                                             />
                                                         </div>
                                                     </motion.div>

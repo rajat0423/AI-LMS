@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { apiUrl, getApiConfigurationError } from '../api';
 import { useAuth } from '../context/useAuth';
+import { useGlobalUser } from '../context/useGlobalUser';
+import BackButton from '../components/BackButton';
 
 const MAX_RESUME_FILE_SIZE_BYTES = 4 * 1024 * 1024;
 
@@ -69,6 +71,7 @@ function DonutScore({ score, size = 140, strokeWidth = 10 }) {
 
 function ResumeAnalyzer() {
     const { token } = useAuth();
+    const { refreshUserData } = useGlobalUser();
     const [resumeFile, setResumeFile] = useState(null);
     const [jdText, setJdText] = useState('');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -139,6 +142,7 @@ function ResumeAnalyzer() {
                 summary: result.analysis_summary
             });
             setShowResults(true);
+            refreshUserData();
         } catch (error) {
             console.error('Analyze error:', error);
             // Dynamic mock fallback calculation based on input criteria so it never defaults to a flat 74
@@ -211,7 +215,9 @@ function ResumeAnalyzer() {
     const data = analysisResult;
 
     return (
-        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] flex flex-col lg:flex-row gap-6">
+        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-4">
+            <BackButton fallbackPath="/dashboard" />
+            <div className="w-full min-h-[calc(100vh-120px)] lg:h-[calc(100vh-120px)] flex flex-col lg:flex-row gap-6">
             
             {/* THEATER MODE MAIN VIEW */}
             <motion.div 
@@ -417,6 +423,7 @@ function ResumeAnalyzer() {
                 )}
             </AnimatePresence>
 
+            </div>
         </div>
     );
 }

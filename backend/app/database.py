@@ -18,27 +18,39 @@ def compile_jsonb_sqlite(_type, _compiler, **_kwargs):
 
 
 engine_kwargs = {
+    "pool_size": 50,
+    "max_overflow": 100,
+    "pool_timeout": 30,
+    "pool_recycle": 1800,
     "pool_pre_ping": True,
-    "pool_recycle": 3600,
 }
 
 import os
+import time
+import sys
 db_url = settings.DATABASE_URL
 engine = None
 fallback_active = False
 
-if db_url.startswith("postgresql"):
-    try:
-        # Create a test connection to verify database is active
-        test_engine = create_engine(db_url, **engine_kwargs)
-        with test_engine.connect() as conn:
-            # Execute a lightweight check
-            conn.execute(test_engine.dialect.statement_compiler(None).ansi_bind_rules and "SELECT 1" or "SELECT 1")
-        engine = test_engine
-    except Exception as exc:
-        import sys
-        print(f"⚠️ Primary database connection failed: {exc}. Activating high-availability SQLite fallback.", file=sys.stderr)
-        fallback_active = True
+if db_url.startswith("postgresql") or db_url.startswith("postgres"):
+    retries = 5
+    for attempt in range(1, retries + 1):
+        try:
+            from sqlalchemy import text
+            test_engine = create_engine(db_url, **engine_kwargs)
+            with test_engine.connect() as conn:
+                # Execute a lightweight check
+                conn.execute(text("SELECT 1"))
+            engine = test_engine
+            print(f"🚀 Successfully connected to PostgreSQL (attempt {attempt}/{retries})", file=sys.stderr)
+            break
+        except Exception as exc:
+            print(f"⚠️ Attempt {attempt}/{retries} to connect to PostgreSQL failed: {exc}. Retrying...", file=sys.stderr)
+            if attempt < retries:
+                time.sleep(2 ** attempt)
+            else:
+                print("🚨 All PostgreSQL connection attempts failed. Activating high-availability SQLite fallback.", file=sys.stderr)
+                fallback_active = True
 
 if not engine:
     # Use SQLite as fallback
@@ -55,6 +67,7 @@ if not engine:
         db_url,
         connect_args={"check_same_thread": False}
     )
+
 
 if db_url.startswith("postgresql"):
     @event.listens_for(engine, "connect")

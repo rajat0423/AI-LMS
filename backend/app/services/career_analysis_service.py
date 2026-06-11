@@ -191,7 +191,7 @@ def _resolve_prompt_key(role_applied: str | None) -> str:
     return "general"
 
 
-def create_resume_analysis(
+async def create_resume_analysis(
     db: Session,
     user: User,
     *,
@@ -203,7 +203,7 @@ def create_resume_analysis(
         field_name="Job description",
     )
 
-    file_bytes = resume_file.file.read()
+    file_bytes = await resume_file.read()
     if not file_bytes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -216,7 +216,7 @@ def create_resume_analysis(
 
     try:
         resume_text = _extract_resume_text(file_bytes)
-        match_result = career_ai_service.generate_resume_match(
+        match_result = await career_ai_service.generate_resume_match(
             resume_text=resume_text,
             job_description=normalized_job_description,
         )
@@ -353,7 +353,7 @@ def create_interview_session(
     return _serialize_interview_detail(session)
 
 
-def complete_interview_session(
+async def complete_interview_session(
     db: Session,
     user: User,
     session_id: uuid.UUID,
@@ -380,7 +380,7 @@ def complete_interview_session(
         )
 
     try:
-        feedback = career_ai_service.generate_interview_feedback(
+        feedback = await career_ai_service.generate_interview_feedback(
             role_applied=session.role_applied,
             job_description=session.job_description,
             questions=questions,

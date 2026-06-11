@@ -68,6 +68,10 @@ function QuestionCard({
     hasPrevious,
     hasNext,
     isSaving = false,
+    questions = [],
+    currentIndex = 0,
+    onJumpToQuestion,
+    submissions = {},
 }) {
     const canShowAnswerFeedback = mode !== 'exam' || canReviewAnswer;
     const effectiveMode = canShowAnswerFeedback ? 'learning' : mode;
@@ -79,6 +83,47 @@ function QuestionCard({
 
     return (
         <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.05)] dark:border-slate-700 dark:bg-slate-900">
+            {/* Question Navigator */}
+            {questions && questions.length > 0 && (
+                <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-slate-100 pb-5 dark:border-slate-800">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mr-2">Jump to:</span>
+                    <div className="flex flex-wrap gap-2">
+                        {questions.map((q, idx) => {
+                            const sub = submissions[q.question_id];
+                            const isActive = idx === currentIndex;
+                            
+                            // Determine style based on attempt correctness & active state
+                            let bgClass = "bg-slate-50 text-slate-650 hover:bg-slate-100 border-slate-200 dark:bg-slate-800/40 dark:text-slate-350 dark:border-slate-700";
+                            
+                            if (sub) {
+                                if (effectiveMode === 'exam') {
+                                    bgClass = "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-900/60";
+                                } else if (sub.isCorrect) {
+                                    bgClass = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/60";
+                                } else {
+                                    bgClass = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-450 dark:border-rose-900/60";
+                                }
+                            }
+                            
+                            const activeOutline = isActive
+                                ? "ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 font-extrabold"
+                                : "font-semibold";
+
+                            return (
+                                <button
+                                    key={q.question_id}
+                                    type="button"
+                                    onClick={() => onJumpToQuestion && onJumpToQuestion(idx)}
+                                    className={`flex h-8 w-8 items-center justify-center rounded-xl border text-xs transition-all ${bgClass} ${activeOutline}`}
+                                    title={`Question ${idx + 1}${sub ? (sub.isCorrect ? ' (Correct)' : ' (Incorrect)') : ' (Unattempted)'}`}
+                                >
+                                    {idx + 1}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
             <div className="flex flex-wrap items-center gap-2 mb-5">
                 <MetaBadge tone="primary">{question.difficulty_level || 'Moderate'}</MetaBadge>
                 <MetaBadge tone="warning">{question.blooms_level || 'Understand'}</MetaBadge>

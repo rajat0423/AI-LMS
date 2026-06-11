@@ -29,15 +29,18 @@ def test_student_can_create_and_list_resume_analyses(
         "_extract_resume_text",
         lambda _file_bytes: "Python SQL FastAPI leadership",
     )
-    monkeypatch.setattr(
-        career_analysis_service.career_ai_service,
-        "generate_resume_match",
-        lambda **_kwargs: CareerResumeMatchResult(
+    async def mock_generate_resume_match(**_kwargs):
+        return CareerResumeMatchResult(
             match_percentage=87,
             matched_keywords=["Python", "FastAPI"],
             missing_keywords=["Docker"],
             analysis_summary="Strong backend fit with one delivery gap.",
-        ),
+        )
+
+    monkeypatch.setattr(
+        career_analysis_service.career_ai_service,
+        "generate_resume_match",
+        mock_generate_resume_match,
     )
 
     create_response = client.post(
@@ -104,15 +107,18 @@ def test_resume_analysis_detail_enforces_ownership(
         "_extract_resume_text",
         lambda _file_bytes: "resume text",
     )
-    monkeypatch.setattr(
-        career_analysis_service.career_ai_service,
-        "generate_resume_match",
-        lambda **_kwargs: CareerResumeMatchResult(
+    async def mock_generate_resume_match(**_kwargs):
+        return CareerResumeMatchResult(
             match_percentage=70,
             matched_keywords=["SQL"],
             missing_keywords=["Python"],
             analysis_summary="Decent analytics baseline.",
-        ),
+        )
+
+    monkeypatch.setattr(
+        career_analysis_service.career_ai_service,
+        "generate_resume_match",
+        mock_generate_resume_match,
     )
 
     create_response = client.post(
@@ -152,7 +158,7 @@ def test_resume_analysis_provider_failures_fall_back_to_heuristic_match_successf
         "_extract_resume_text",
         lambda _file_bytes: "resume text with university and bachelor degree and experience",
     )
-    def mock_raise_provider_error(*args, **kwargs):
+    async def mock_raise_provider_error(*args, **kwargs):
         raise CareerAIProviderError("provider down")
 
     monkeypatch.setattr(
@@ -204,16 +210,19 @@ def test_student_can_create_and_complete_interview_sessions(
     assert len(create_payload["questions"]) == 3
     session_id = create_payload["session_id"]
 
-    monkeypatch.setattr(
-        career_analysis_service.career_ai_service,
-        "generate_interview_feedback",
-        lambda **_kwargs: CareerInterviewFeedbackResult(
+    async def mock_generate_interview_feedback(**_kwargs):
+        return CareerInterviewFeedbackResult(
             overall_score=89,
             feedback_summary=["Solid structure and technical clarity."],
             strengths=["Clear examples"],
             improvement_areas=["More measurable impact"],
             better_answer_suggestions=["Quantify the debugging outcome."],
-        ),
+        )
+
+    monkeypatch.setattr(
+        career_analysis_service.career_ai_service,
+        "generate_interview_feedback",
+        mock_generate_interview_feedback,
     )
 
     complete_response = client.post(
@@ -297,7 +306,7 @@ def test_interview_session_provider_failures_return_upstream_error_and_keep_sess
     )
     session_id = create_response.json()["session_id"]
 
-    def mock_raise_provider_error(*args, **kwargs):
+    async def mock_raise_provider_error(*args, **kwargs):
         raise CareerAIProviderError("provider down")
 
     monkeypatch.setattr(

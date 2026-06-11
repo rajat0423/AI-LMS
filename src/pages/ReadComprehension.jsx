@@ -6,8 +6,10 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
+import { useGlobalUser } from '../context/useGlobalUser';
 import { apiUrl } from '../api';
 import MCQWorkspace from '../components/mcq/MCQWorkspace';
+import BackButton from '../components/BackButton';
 
 const staticCurriculum = {
     1: {
@@ -67,7 +69,6 @@ const staticCurriculum = {
         next: 'All modules completed — You are placement ready!',
         aiTools: [
             { label: 'AI Interviewer', sub: 'Advanced mock sessions', path: '/ai-interviewer', icon: Target, col: 'text-violet-600', bg: 'bg-violet-50 border-violet-100' },
-            { label: 'Employability Report', sub: 'Full career readiness check', path: '/report', icon: Sparkles, col: 'text-rose-600', bg: 'bg-rose-50 border-rose-100' },
         ],
     },
 };
@@ -87,6 +88,7 @@ function isUnitHeader(title) {
 
 export default function ReadComprehension() {
     const { token, user } = useAuth();
+    const { refreshUserData } = useGlobalUser();
     const navigate = useNavigate();
     const [modules, setModules] = useState([]);
     const [selectedModule, setSelectedModule] = useState(null);
@@ -230,6 +232,11 @@ export default function ReadComprehension() {
 
             if (res.ok) {
                 setCompletedLessons((prev) => new Set([...prev, lessonId]));
+                try {
+                    refreshUserData();
+                } catch (e) {
+                    console.error("Failed to refresh user stats on lesson completion:", e);
+                }
             }
         } catch (e) {
             console.error('Failed to mark lesson complete:', e);
@@ -276,6 +283,7 @@ export default function ReadComprehension() {
 
     return (
         <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
+            <BackButton />
             <div className="bg-white dark:bg-slate-900 rounded-3xl px-8 py-6 border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>

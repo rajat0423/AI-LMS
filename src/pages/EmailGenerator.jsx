@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
+import { useGlobalUser } from '../context/useGlobalUser';
 import { apiUrl, getApiConfigurationError } from '../api';
+import BackButton from '../components/BackButton';
 import {
     RefreshCw,
     ExternalLink,
@@ -69,6 +71,7 @@ const FormInput = ({ icon: Icon, ...props }) => (
 
 export default function EmailGenerator() {
     const { user, token } = useAuth();
+    const { refreshUserData } = useGlobalUser();
     const location = useLocation();
     const isManualMode = new URLSearchParams(location.search).get('mode') === 'manual';
     const assistantPanelRef = useRef(null);
@@ -257,6 +260,8 @@ export default function EmailGenerator() {
         if (!current.subject.trim() && !current.body.trim()) { setStatus({ type: 'error', text: 'There is no draft to copy yet.' }); return; }
         try {
             await copyText(`Subject: ${current.subject}\n\n${current.body}`);
+            localStorage.setItem('nlm-has-drafted-email', 'true');
+            refreshUserData();
             setStatus({ type: 'success', text: 'Current draft copied to clipboard.' });
         } catch (error) {
             console.error('Clipboard error:', error);
@@ -280,6 +285,8 @@ export default function EmailGenerator() {
         const mailtoLink = getMailtoLink(current);
         if (!mailtoLink) { setStatus({ type: 'error', text: 'Add a subject or body before opening the mail app.' }); return; }
         window.location.href = mailtoLink;
+        localStorage.setItem('nlm-has-drafted-email', 'true');
+        refreshUserData();
         setStatus({ type: 'info', text: 'Opening your default mail app with the current draft prefilled.' });
     };
 
@@ -291,7 +298,9 @@ export default function EmailGenerator() {
 
 
     return (
-        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] flex flex-col lg:flex-row gap-6">
+        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-4">
+            <BackButton />
+            <div className="w-full min-h-[calc(100vh-120px)] lg:h-[calc(100vh-120px)] flex flex-col lg:flex-row gap-6 relative">
             <div className="flex items-center justify-between lg:hidden mb-2">
                 <button 
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -504,5 +513,6 @@ export default function EmailGenerator() {
         </AnimatePresence>
             </div>
         </div>
-    );
+    </div>
+);
 }

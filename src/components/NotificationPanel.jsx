@@ -5,16 +5,15 @@ import { Bell, CheckCheck, ExternalLink } from 'lucide-react';
 import { apiUrl } from '../api';
 import { useAuth } from '../context/useAuth';
 
-function NotificationPanel({ isOpen, onClose }) {
+function NotificationPanel({ isOpen, onClose, unreadCount, setUnreadCount }) {
     const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const { token } = useAuth();
     const navigate = useNavigate();
     const panelRef = useRef(null);
 
     const fetchNotifications = async () => {
-        if (!token) return;
+        if (!token) return null;
         setIsLoading(true);
         try {
             const res = await fetch(apiUrl('/api/v1/notifications/'), {
@@ -24,23 +23,23 @@ function NotificationPanel({ isOpen, onClose }) {
                 const data = await res.json();
                 setNotifications(data);
                 setUnreadCount(data.filter(n => !n.is_read).length);
+                return data;
             }
         } catch {
             // Fallback mock data
-            setNotifications([
+            const mock = [
                 { notification_id: '1', title: 'Welcome to AI LMS! 🎉', message: 'Start your learning journey with our AI-powered tools.', notification_type: 'success', is_read: false, link: '/ai-tools', created_at: new Date().toISOString() },
                 { notification_id: '2', title: 'Try the AI Interviewer', message: 'Practice mock interviews and get instant AI feedback.', notification_type: 'info', is_read: false, link: '/interview', created_at: new Date().toISOString() },
                 { notification_id: '3', title: 'Upload your Resume', message: 'Get your ATS score and keyword analysis in seconds.', notification_type: 'info', is_read: true, link: '/resume', created_at: new Date().toISOString() },
-            ]);
-            setUnreadCount(2);
+            ];
+            setNotifications(mock);
+            setUnreadCount(mock.filter(n => !n.is_read).length);
+            return mock;
         } finally {
             setIsLoading(false);
         }
+        return null;
     };
-
-    useEffect(() => {
-        if (isOpen) fetchNotifications();
-    }, [isOpen]);
 
     const markAllRead = async () => {
         try {
@@ -56,7 +55,31 @@ function NotificationPanel({ isOpen, onClose }) {
         }
     };
 
-    const handleClick = (notif) => {
+    useEffect(() => {
+        if (isOpen) {
+            const init = async () => {
+                const data = await fetchNotifications();
+                if (data && data.some(n => !n.is_read)) {
+                    await markAllRead();
+                }
+            };
+            init();
+        }
+    }, [isOpen]);
+
+    const handleClick = async (notif) => {
+        if (!notif.is_read) {
+            try {
+                await fetch(apiUrl(`/api/v1/notifications/${notif.notification_id}/read`), {
+                    method: 'PATCH',
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setNotifications(prev => prev.map(n => n.notification_id === notif.notification_id ? { ...n, is_read: true } : n));
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            } catch (e) {
+                console.error("Failed to mark individual notification as read:", e);
+            }
+        }
         if (notif.link) {
             navigate(notif.link);
             onClose();

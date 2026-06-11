@@ -13,7 +13,6 @@ import NotFound from './pages/NotFound';
 // Features loaded lazily for performance code-splitting
 const ResumeAnalyzer = React.lazy(() => import('./pages/ResumeAnalyzer'));
 const ResumeTailor = React.lazy(() => import('./pages/ResumeTailor'));
-const EmployabilityReport = React.lazy(() => import('./pages/EmployabilityReport'));
 const EmailGenerator = React.lazy(() => import('./pages/EmailGenerator'));
 const BlogWriter = React.lazy(() => import('./pages/BlogWriter'));
 const AiInterviewer = React.lazy(() => import('./pages/AiInterviewer'));
@@ -24,7 +23,6 @@ const Settings = React.lazy(() => import('./pages/Settings'));
 const AdminPanel = React.lazy(() => import('./pages/AdminPanel'));
 const CourseDetail = React.lazy(() => import('./pages/CourseDetail'));
 const QuizViewer = React.lazy(() => import('./pages/QuizViewer'));
-const CertificateViewer = React.lazy(() => import('./pages/CertificateViewer'));
 import { ThemeProvider } from './context/ThemeContext';
 
 
@@ -84,11 +82,9 @@ function AppRoutes() {
         <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
         <Route path="/course/:id" element={<ProtectedRoute><Layout><CourseDetail /></Layout></ProtectedRoute>} />
         <Route path="/quiz/:id" element={<ProtectedRoute><Layout><QuizViewer /></Layout></ProtectedRoute>} />
-        <Route path="/certificate/:id" element={<ProtectedRoute><Layout><CertificateViewer /></Layout></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><Layout><AiInterviewer /></Layout></ProtectedRoute>} />
         <Route path="/resume" element={<ProtectedRoute><Layout><ResumeAnalyzer /></Layout></ProtectedRoute>} />
         <Route path="/resume-tailor" element={<ProtectedRoute><Layout><ResumeTailor /></Layout></ProtectedRoute>} />
-        <Route path="/report" element={<ProtectedRoute><Layout><EmployabilityReport /></Layout></ProtectedRoute>} />
         <Route path="/email-writer" element={<ProtectedRoute><Layout><EmailGenerator /></Layout></ProtectedRoute>} />
         <Route path="/blog-writer" element={<ProtectedRoute><Layout><BlogWriter /></Layout></ProtectedRoute>} />
         <Route path="/read-comprehension" element={<ProtectedRoute><Layout><ReadComprehension /></Layout></ProtectedRoute>} />

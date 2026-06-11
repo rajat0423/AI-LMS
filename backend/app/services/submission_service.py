@@ -171,7 +171,7 @@ def update_user_submission(
     return get_user_submission(db, user, submission.submission_id)
 
 
-def generate_feedback_for_user_submission(
+async def generate_feedback_for_user_submission(
     db: Session,
     user: User,
     submission_id: uuid.UUID,
@@ -190,7 +190,7 @@ def generate_feedback_for_user_submission(
         )
 
     try:
-        generated_feedback = ai_feedback_service.generate_feedback(submission)
+        generated_feedback = await ai_feedback_service.generate_feedback(submission)
     except AIProviderError as exc:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,

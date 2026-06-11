@@ -55,7 +55,7 @@ class ContentAIError(Exception):
     """Raised when the AI provider cannot produce usable content."""
 
 
-def _call_groq(
+async def _call_groq(
     *,
     system_prompt: str,
     user_prompt: str,
@@ -80,15 +80,16 @@ def _call_groq(
     }
 
     try:
-        response = httpx.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json=payload,
-            timeout=settings.GROQ_TIMEOUT_SECONDS,
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+                timeout=settings.GROQ_TIMEOUT_SECONDS,
+            )
     except httpx.TimeoutException as exc:
         raise ContentAIError("Groq request timed out") from exc
     except httpx.HTTPError as exc:
@@ -159,7 +160,7 @@ def _blog_assist_fallback(title: str, content: str) -> BlogAssistResponse:
 
 # ── Public service functions ───────────────────────────────────────────────────
 
-def generate_email(
+async def generate_email(
     *,
     email_prompt: str,
     tone: str = "professional",
@@ -193,7 +194,7 @@ def generate_email(
     )
 
     try:
-        raw = _call_groq(
+        raw = await _call_groq(
             system_prompt="You are an expert professional email writer. Return structured JSON only.",
             user_prompt=prompt,
             model=settings.EMAIL_GROQ_MODEL or None,
@@ -210,7 +211,7 @@ def generate_email(
         return _email_generate_fallback(email_prompt, tone)
 
 
-def assist_email(
+async def assist_email(
     *,
     action: str,
     subject: str,
@@ -240,7 +241,7 @@ def assist_email(
     )
 
     try:
-        raw = _call_groq(
+        raw = await _call_groq(
             system_prompt=(
                 "You are a professional email coach. "
                 "Analyze and improve the email draft. Return structured JSON only."
@@ -256,7 +257,7 @@ def assist_email(
         return _email_assist_fallback(action, subject, body)
 
 
-def assist_blog(
+async def assist_blog(
     *,
     action: str,
     title: str | None,
@@ -275,7 +276,7 @@ def assist_blog(
     )
 
     try:
-        raw = _call_groq(
+        raw = await _call_groq(
             system_prompt=(
                 "You are a professional blog editor. "
                 "Evaluate the blog draft strictly and return structured JSON only."
@@ -658,14 +659,14 @@ def _tailor_resume_fallback(resume_text: str, job_description: str) -> TailoredR
 
 
 
-def tailor_resume(
+async def tailor_resume(
     *,
     resume_file: UploadFile,
     job_description: str,
 ) -> TailoredResumeResponse:
     """Upload a PDF resume, extract text, and call Groq to return an optimized structured JSON resume."""
-    # 1. Read file bytes
-    file_bytes = resume_file.file.read()
+    # 1. Read file bytes asynchronously
+    file_bytes = await resume_file.read()
     if not file_bytes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -733,7 +734,7 @@ def tailor_resume(
 
     try:
         try:
-            raw = _call_groq(
+            raw = await _call_groq(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
                 model="llama-3.3-70b-versatile",
@@ -741,7 +742,7 @@ def tailor_resume(
                 max_tokens=3000,
             )
         except Exception as groq_err_70b:
-            raw = _call_groq(
+            raw = await _call_groq(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
                 model="llama-3.1-8b-instant",

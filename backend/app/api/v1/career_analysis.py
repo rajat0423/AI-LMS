@@ -27,13 +27,13 @@ router = APIRouter(tags=["Career Analysis"])
     status_code=status.HTTP_201_CREATED,
     responses=error_responses(400, 401, 403, 422, 500, 502),
 )
-def create_resume_analysis(
+async def create_resume_analysis(
     resume_file: UploadFile = File(...),
     job_description: str = Form(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_premium),
 ):
-    return career_analysis_service.create_resume_analysis(
+    return await career_analysis_service.create_resume_analysis(
         db,
         current_user,
         resume_file=resume_file,
@@ -89,13 +89,13 @@ def create_interview_session(
     response_model=InterviewSessionDetailResponse,
     responses=error_responses(400, 401, 403, 404, 422, 500, 502),
 )
-def complete_my_interview_session(
+async def complete_my_interview_session(
     session_id: uuid.UUID,
     request_data: InterviewSessionCompleteRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_student),
 ):
-    return career_analysis_service.complete_interview_session(
+    return await career_analysis_service.complete_interview_session(
         db,
         current_user,
         session_id,

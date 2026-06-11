@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { apiUrl, getApiConfigurationError } from '../api';
 import { useAuth } from '../context/useAuth';
+import BackButton from '../components/BackButton';
 import './ResumeTemplates.css';
 
 const MAX_RESUME_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -489,7 +490,8 @@ export default function ResumeTailor() {
     };
 
     return (
-        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-64px)] flex flex-col">
+        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-64px)] flex flex-col gap-4">
+            <BackButton fallbackPath="/dashboard" />
             
             {/* STICKY CONTROL BAR - Hides during print */}
             <div className="no-print w-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[1.5rem] p-4 md:px-6 md:py-4 flex flex-col md:flex-row justify-between items-center gap-4 mb-6 shadow-sm">

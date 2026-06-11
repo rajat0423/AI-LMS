@@ -105,6 +105,7 @@ function buildClientUser(apiUser, overrides = {}) {
         avatar: apiUser?.avatar_url || overrides.avatar || null,
         authProvider: apiUser?.auth_provider || overrides.authProvider || 'local',
         scores: overrides.scores || DEFAULT_SCORES,
+        createdAt: apiUser?.created_at || overrides.createdAt || null,
     };
 }
 

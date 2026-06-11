@@ -40,12 +40,17 @@ class Settings(BaseSettings):
     BLOG_GROQ_MAX_TOKENS: int = 900
     CHAT_GROQ_MODEL: str = ""
     CHAT_GROQ_TEMPERATURE: float = 0.7
-    CHAT_GROQ_MAX_TOKENS: int = 800
+    CHAT_GROQ_MAX_TOKENS: int = 1400
 
     CAREER_UPLOAD_DIR: str = str(BASE_DIR / "uploads" / "career")
     CAREER_UPLOAD_MAX_BYTES: int = 5 * 1024 * 1024
     STRIPE_API_KEY: str | None = None
     STRIPE_WEBHOOK_SECRET: str | None = None
+
+    # Redis and Celery configuration
+    REDIS_URL: str = "redis://localhost:6379/0"
+    CELERY_BROKER_URL: str = "redis://localhost:6379/1"
+    CELERY_RESULT_BACKEND: str = "redis://localhost:6379/1"
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",

@@ -3,6 +3,7 @@ import { useAuth } from '../context/useAuth';
 import { apiUrl } from '../api';
 import { motion } from 'framer-motion';
 import { User, Lock, Shield, Save, CheckCircle, AlertCircle } from 'lucide-react';
+import BackButton from '../components/BackButton';
 
 const YEAR_OPTIONS = [
     { value: 1, label: 'Year 1' },
@@ -111,7 +112,8 @@ function Settings() {
     ];
 
     return (
-        <div className="w-full max-w-[900px] mx-auto px-4 sm:px-6 py-10">
+        <div className="w-full max-w-[900px] mx-auto px-4 sm:px-6 py-10 flex flex-col gap-4">
+            <BackButton />
             <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}>
                 <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-2">Settings</h1>
                 <p className="text-base text-slate-500 mb-8">Manage your account and preferences</p>

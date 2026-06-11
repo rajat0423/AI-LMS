@@ -18,17 +18,20 @@ def test_student_can_generate_ai_feedback_for_all_submission_types(
     student_user, student_password = create_user(role_name="student", email=f"{submission_type}@example.com")
     student_headers = auth_headers(student_user.email, student_password)
 
-    monkeypatch.setattr(
-        submission_service.ai_feedback_service,
-        "generate_feedback",
-        lambda _submission: GeneratedFeedback(
+    async def mock_generate_feedback(_submission):
+        return GeneratedFeedback(
             score=91,
             feedback_text=f"AI feedback for {submission_type}.",
             improved_version=f"Improved {submission_type} version.",
             strengths=["Clear structure"],
             weaknesses=["Needs more specificity"],
             suggestions=["Add measurable outcomes"],
-        ),
+        )
+
+    monkeypatch.setattr(
+        submission_service.ai_feedback_service,
+        "generate_feedback",
+        mock_generate_feedback,
     )
 
     create_response = client.post(
@@ -79,10 +82,13 @@ def test_ai_feedback_generation_failures_keep_submission_pending(
     student_user, student_password = create_user(role_name="student", email="student@example.com")
     student_headers = auth_headers(student_user.email, student_password)
 
+    async def mock_generate_feedback(_submission):
+        raise AIProviderError("provider down")
+
     monkeypatch.setattr(
         submission_service.ai_feedback_service,
         "generate_feedback",
-        lambda _submission: (_ for _ in ()).throw(AIProviderError("provider down")),
+        mock_generate_feedback,
     )
 
     create_response = client.post(
@@ -120,17 +126,20 @@ def test_ai_feedback_generation_respects_submission_ownership(
     owner_user, owner_password = create_user(role_name="student", email="owner@example.com")
     other_user, other_password = create_user(role_name="student", email="other@example.com")
 
-    monkeypatch.setattr(
-        submission_service.ai_feedback_service,
-        "generate_feedback",
-        lambda _submission: GeneratedFeedback(
+    async def mock_generate_feedback(_submission):
+        return GeneratedFeedback(
             score=75,
             feedback_text="Ownership should prevent this path.",
             improved_version=None,
             strengths=["N/A"],
             weaknesses=["N/A"],
             suggestions=["N/A"],
-        ),
+        )
+
+    monkeypatch.setattr(
+        submission_service.ai_feedback_service,
+        "generate_feedback",
+        mock_generate_feedback,
     )
 
     create_response = client.post(
@@ -218,17 +227,20 @@ def test_admin_can_override_ai_generated_feedback_and_republish(
     admin_user, admin_password = create_user(role_name="admin", email="admin@example.com")
     student_user, student_password = create_user(role_name="student", email="student@example.com")
 
-    monkeypatch.setattr(
-        submission_service.ai_feedback_service,
-        "generate_feedback",
-        lambda _submission: GeneratedFeedback(
+    async def mock_generate_feedback(_submission):
+        return GeneratedFeedback(
             score=84,
             feedback_text="Initial AI feedback.",
             improved_version="Initial improved version.",
             strengths=["Professional tone"],
             weaknesses=["Needs more detail"],
             suggestions=["Add a stronger close"],
-        ),
+        )
+
+    monkeypatch.setattr(
+        submission_service.ai_feedback_service,
+        "generate_feedback",
+        mock_generate_feedback,
     )
 
     student_headers = auth_headers(student_user.email, student_password)

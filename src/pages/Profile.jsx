@@ -3,6 +3,7 @@ import { useAuth } from '../context/useAuth';
 import { useGlobalUser } from '../context/useGlobalUser';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import BackButton from '../components/BackButton';
 import {
     UserCircle,
     Mail,
@@ -120,6 +121,7 @@ export default function Profile() {
 
     return (
         <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-8 min-h-screen">
+            <BackButton />
             
             {/* Dynamic Bio Saving Notification (Toast) */}
             <AnimatePresence>
@@ -174,10 +176,6 @@ export default function Profile() {
                             </div>
                             
                             <div className="flex flex-wrap gap-2.5 justify-center md:justify-start mt-1">
-                                <div className="px-3.5 py-2 bg-slate-800/80 rounded-xl border border-slate-700/60 flex items-center gap-2 text-sm font-bold shadow-xs">
-                                    <Trophy size={14} className="text-yellow-400 fill-yellow-400" />
-                                    <span>{rankLabel}</span>
-                                </div>
                                 <div className="px-3.5 py-2 bg-slate-800/80 rounded-xl border border-slate-700/60 flex items-center gap-2 text-sm font-bold shadow-xs">
                                     <Award size={14} className="text-blue-400" />
                                     <span>{dynamicXp >= 1000 ? (dynamicXp / 1000).toFixed(1) + 'k' : dynamicXp} XP</span>
@@ -271,153 +269,37 @@ export default function Profile() {
                 )}
             </motion.div>
 
-            {/* Bento Grid: Career Milestones Certifications vs Consistency Tree */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-                
-                {/* 1. Dynamic Certifications achievements - 7 cols */}
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.99 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.15 }}
-                    className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-300 dark:border-slate-800 shadow-sm p-6 sm:p-8"
-                >
-                    <h2 className="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2 mb-6">
-                        <Award size={18} className="text-indigo-600 dark:text-indigo-400" /> Unlockable Certifications
-                    </h2>
-                    
-                    <div className="flex flex-col gap-4">
-                        {/* Certificate Card 1 */}
-                        <div className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${
-                            completedModules >= 1 
-                                ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 dark:from-emerald-950/30 dark:to-emerald-900/10 border-emerald-500/30 dark:border-emerald-700/30' 
-                                : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-60'
-                        }`}>
-                            <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                                    completedModules >= 1 ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
-                                }`}>
-                                    <Award size={24} />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-                                        Foundation Certificate
-                                        {completedModules >= 1 && <span className="text-xs font-bold uppercase bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/50">Unlocked</span>}
-                                    </h4>
-                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Acquired upon completing Module 1: Foundation.</p>
-                                </div>
-                            </div>
-                            {completedModules >= 1 ? (
-                                <Link 
-                                    to="/certificate" 
-                                    className="p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-xs font-bold"
-                                >
-                                    View
-                                </Link>
-                            ) : (
-                                <Lock size={16} className="text-slate-400 mr-2" />
-                            )}
-                        </div>
-
-                        {/* Certificate Card 2 */}
-                        <div className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${
-                            completedModules >= 2 
-                                ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 dark:from-emerald-950/30 dark:to-emerald-900/10 border-emerald-500/30 dark:border-emerald-700/30' 
-                                : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-60'
-                        }`}>
-                            <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                                    completedModules >= 2 ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
-                                }`}>
-                                    <Award size={24} />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-                                        Communication Certificate
-                                        {completedModules >= 2 && <span className="text-xs font-bold uppercase bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/50">Unlocked</span>}
-                                    </h4>
-                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Acquired upon completing Module 2: Communication.</p>
-                                </div>
-                            </div>
-                            {completedModules >= 2 ? (
-                                <Link 
-                                    to="/certificate" 
-                                    className="p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-xs font-bold"
-                                >
-                                    View
-                                </Link>
-                            ) : (
-                                <Lock size={16} className="text-slate-400 mr-2" />
-                            )}
-                        </div>
-
-                        {/* Certificate Card 3 */}
-                        <div className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${
-                            completedModules >= 3 
-                                ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 dark:from-emerald-950/30 dark:to-emerald-900/10 border-emerald-500/30 dark:border-emerald-700/30' 
-                                : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-60'
-                        }`}>
-                            <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                                    completedModules >= 3 ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
-                                }`}>
-                                    <Award size={24} />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-                                        Employability Ready
-                                        {completedModules >= 3 && <span className="text-xs font-bold uppercase bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/50">Unlocked</span>}
-                                    </h4>
-                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Acquired upon completing Module 3: Interview prep.</p>
-                                </div>
-                            </div>
-                            {completedModules >= 3 ? (
-                                <Link 
-                                    to="/certificate" 
-                                    className="p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-xs font-bold"
-                                >
-                                    View
-                                </Link>
-                            ) : (
-                                <Lock size={16} className="text-slate-400 mr-2" />
-                            )}
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* 2. Gamified Consistency Tree - 5 cols */}
+            {/* Learning Consistency Full Width Card */}
+            <div className="w-full">
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.99 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-300 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden"
+                    className="w-full bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-300 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-[40px] pointer-events-none" />
                     
-                    <div>
-                        <h2 className="text-xs font-extrabold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2 mb-2">
-                            <Zap className="text-amber-500 fill-amber-500 animate-pulse" size={16} /> Learning Consistency
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
-                            Keep completing topic quizzes to grow your sapling tree.
-                        </p>
-                    </div>
-                    
-                    <div className="flex-1 flex items-center justify-center py-6">
-                        <div className="w-full max-w-[260px] mx-auto">
-                            <ConsistencyTree streak={streakCount} />
+                    <div className="flex-1 flex flex-col justify-between gap-6 self-stretch">
+                        <div>
+                            <h2 className="text-xs font-extrabold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2 mb-2">
+                                <Zap className="text-amber-500 fill-amber-500 animate-pulse" size={16} /> Learning Consistency
+                            </h2>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium">
+                                Keep completing topic quizzes to grow your sapling tree.
+                            </p>
+                        </div>
+                        
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
+                            <span className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">Active Consistency Streak</span>
+                            <h4 className="text-2xl font-black text-slate-800 dark:text-white mt-1">{streakCount} Days</h4>
                         </div>
                     </div>
                     
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
-                        <span className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">Active Consistency Streak</span>
-                        <h4 className="text-2xl font-black text-slate-800 dark:text-white mt-1">{streakCount} Days</h4>
+                    <div className="w-full max-w-[280px] shrink-0 flex items-center justify-center py-4">
+                        <ConsistencyTree streak={streakCount} />
                     </div>
                 </motion.div>
-
             </div>
-
-
-            
         </div>
     );
 }

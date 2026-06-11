@@ -12,7 +12,8 @@ from app.database import get_db
 from app.core.security import get_current_user_from_token
 from app.models.quiz import Quiz, Question, Option, QuizAttempt, QuestionAttempt, QuestionBookmark
 from app.models.user import User
-from app.services import module_service
+from app.services import module_service, progress_service
+from app.core.cache import cache_get, cache_set
 
 router = APIRouter(prefix="/quiz", tags=["Quizzes"])
 
@@ -420,11 +421,19 @@ async def get_quizzes_by_module(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_from_token),
 ):
+    cache_key = f"quiz:module:{module_id}"
+    cached = await cache_get(cache_key)
+    if cached is not None:
+        return cached
+
     module = module_service.get_module_or_404(db, module_id, user=current_user)
     quizzes = db.query(Quiz).options(
         joinedload(Quiz.questions).joinedload(Question.options)
     ).filter(Quiz.module_id == module.module_id).all()
-    return [_serialize_quiz_for_student(q) for q in quizzes]
+    
+    serialized = [_serialize_quiz_for_student(q) for q in quizzes]
+    await cache_set(cache_key, serialized, ttl=1800)  # cache for 30 minutes
+    return serialized
 
 
 @router.get("/module/{module_id}/study-bank")
@@ -541,6 +550,11 @@ async def get_quiz_by_lesson(
     current_user: User = Depends(get_current_user_from_token),
 ):
     """Get the quiz for a specific topic/lesson."""
+    cache_key = f"quiz:lesson:{lesson_id}"
+    cached = await cache_get(cache_key)
+    if cached is not None:
+        return cached
+
     lesson = module_service.get_lesson_or_404(db, lesson_id, user=current_user)
     
     quiz = db.query(Quiz).options(
@@ -550,7 +564,9 @@ async def get_quiz_by_lesson(
     if not quiz:
         raise HTTPException(status_code=404, detail="No quiz found for this lesson")
     
-    return _serialize_quiz_for_student(quiz, randomize=True)
+    serialized = _serialize_quiz_for_student(quiz, randomize=True)
+    await cache_set(cache_key, serialized, ttl=1800)  # cache for 30 minutes
+    return serialized
 
 
 @router.post("/{quiz_id}/submit")
@@ -586,6 +602,32 @@ async def submit_quiz(
             if user_option and user_option.is_correct:
                 is_correct = True
                 correct_count += 1
+            
+            # Save QuestionAttempt record in database
+            if user_option:
+                q_attempt = (
+                    db.query(QuestionAttempt)
+                    .filter(
+                        QuestionAttempt.user_id == current_user.user_id,
+                        QuestionAttempt.question_id == qs.question_id,
+                    )
+                    .first()
+                )
+                if q_attempt:
+                    q_attempt.selected_option_id = user_option.option_id
+                    q_attempt.is_correct = user_option.is_correct
+                    q_attempt.mode = "exam"
+                    q_attempt.attempted_at = datetime.now(timezone.utc)
+                else:
+                    q_attempt = QuestionAttempt(
+                        user_id=current_user.user_id,
+                        question_id=qs.question_id,
+                        selected_option_id=user_option.option_id,
+                        is_correct=user_option.is_correct,
+                        mode="exam",
+                        attempted_at=datetime.now(timezone.utc),
+                    )
+                    db.add(q_attempt)
         
         topic_title = quiz.lesson.title if quiz.lesson else quiz.title
         difficulty_level = qs.difficulty_level or "Medium"
@@ -629,6 +671,18 @@ async def submit_quiz(
     db.add(attempt)
     db.commit()
     db.refresh(attempt)
+
+    # Automatically synchronize this attempt's completion and score to UserProgress
+    if quiz.lesson_id:
+        try:
+            progress_service.mark_lesson_complete(
+                db=db,
+                user=current_user,
+                lesson_id=quiz.lesson_id,
+                score=int(score_percentage),
+            )
+        except Exception:
+            pass
     
     return {
         "score": attempt.score,

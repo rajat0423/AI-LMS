@@ -50,7 +50,7 @@ class GroqFeedbackService:
     def model_name(self) -> str:
         return self._model_name
 
-    def generate_feedback(self, submission: Submission) -> GeneratedFeedback:
+    async def generate_feedback(self, submission: Submission) -> GeneratedFeedback:
         if not self._api_key:
             raise AIProviderError("Groq API key is not configured")
 
@@ -68,15 +68,16 @@ class GroqFeedbackService:
         }
 
         try:
-            response = httpx.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self._api_key}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-                timeout=self._timeout,
-            )
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self._api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json=payload,
+                    timeout=self._timeout,
+                )
         except httpx.TimeoutException as exc:
             raise AIProviderError("Groq request timed out") from exc
         except httpx.HTTPError as exc:

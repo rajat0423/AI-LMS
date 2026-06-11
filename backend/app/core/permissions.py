@@ -29,14 +29,17 @@ require_student = RoleChecker(["student", "admin"])
 require_admin = RoleChecker(["admin"])
 require_either = RoleChecker(["student", "admin"])
 
-def require_premium(current_user: User = Depends(require_student)):
-    # Admins bypass premium check automatically
+def require_premium(
+    current_user: User = Depends(require_student),
+    db: Session = Depends(get_db)
+):
     if current_user.role and current_user.role.role_name == "admin":
         return current_user
-        
-    if not current_user.subscription or current_user.subscription.status != "active":
+
+    sub = current_user.subscription
+    if not sub or sub.status != "active":
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Premium subscription required"
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Active premium subscription required to access this feature."
         )
     return current_user

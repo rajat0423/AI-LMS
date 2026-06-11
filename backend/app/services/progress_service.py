@@ -77,7 +77,7 @@ def _is_accessible_to_student(user: User, module: Module) -> bool:
     return module.year == user.year
 
 
-def mark_lesson_complete(db: Session, user: User, lesson_id: uuid.UUID) -> ProgressItemResponse:
+def mark_lesson_complete(db: Session, user: User, lesson_id: uuid.UUID, score: int | None = None) -> ProgressItemResponse:
     lesson = (
         db.query(Lesson)
         .options(selectinload(Lesson.module))
@@ -89,6 +89,25 @@ def mark_lesson_complete(db: Session, user: User, lesson_id: uuid.UUID) -> Progr
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found",
         )
+
+    # Automatically calculate score from user attempts if none was provided
+    if score is None:
+        from app.models.quiz import Quiz, Question, QuestionAttempt
+        quiz = db.query(Quiz).filter(Quiz.lesson_id == lesson_id).first()
+        if quiz and quiz.questions:
+            total_questions = len(quiz.questions)
+            question_ids = [q.question_id for q in quiz.questions]
+            attempts = (
+                db.query(QuestionAttempt)
+                .filter(
+                    QuestionAttempt.user_id == user.user_id,
+                    QuestionAttempt.question_id.in_(question_ids)
+                )
+                .all()
+            )
+            correct_attempts = sum(1 for a in attempts if a.is_correct)
+            if total_questions > 0:
+                score = int((correct_attempts / total_questions) * 100)
 
     progress = (
         db.query(UserProgress)
@@ -109,11 +128,13 @@ def mark_lesson_complete(db: Session, user: User, lesson_id: uuid.UUID) -> Progr
             lesson_id=lesson_id,
             is_completed=True,
             completed_at=now,
+            score=score,
         )
         db.add(progress)
     else:
         progress.is_completed = True
         progress.completed_at = progress.completed_at or now
+        progress.score = score
 
     if not was_completed:
         _update_streak(db, user.user_id)

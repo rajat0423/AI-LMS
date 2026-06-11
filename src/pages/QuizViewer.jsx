@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, ArrowRight, ArrowLeft, Award, RotateCcw, Lightbulb, Target, BrainCircuit, BarChart2, TrendingUp, BookOpen, Layers } from 'lucide-react';
 import { apiUrl } from '../api';
 import { useAuth } from '../context/useAuth';
+import { useGlobalUser } from '../context/useGlobalUser';
 
 function QuizViewer() {
     const { id } = useParams();
@@ -11,6 +12,7 @@ function QuizViewer() {
     const mode = searchParams.get('mode'); // 'lesson' = topic quiz
     const navigate = useNavigate();
     const { token } = useAuth();
+    const { refreshUserData } = useGlobalUser();
 
     const [quiz, setQuiz] = useState(null);
     const [answers, setAnswers] = useState({});
@@ -66,6 +68,11 @@ function QuizViewer() {
             if (res.ok) {
                 const data = await res.json();
                 setResult(data);
+                try {
+                    refreshUserData();
+                } catch (e) {
+                    console.error("Failed to refresh user stats on quiz submission:", e);
+                }
             } else {
                 const errorText = await res.text();
                 console.error("Submit error:", errorText);
@@ -173,16 +180,10 @@ function QuizViewer() {
                                 <RotateCcw size={18} /> Retry Quiz
                             </button>
                         )}
-                        {result.passed && mode === 'lesson' && (
+                        {result.passed && (
                             <button onClick={() => navigate(-1)}
                                 className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/30">
                                 Back to Topics <ArrowRight size={18} />
-                            </button>
-                        )}
-                        {result.passed && mode !== 'lesson' && (
-                            <button onClick={() => navigate(`/certificate/${id}`)}
-                                className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/30">
-                                Claim Certificate <ArrowRight size={18} />
                             </button>
                         )}
                         <button onClick={() => navigate('/dashboard')}
@@ -407,6 +408,41 @@ function QuizViewer() {
                     <span>{Math.round(progress)}% Complete</span>
                 </div>
             </div>
+
+            {/* Question Navigator */}
+            {quiz.questions && quiz.questions.length > 0 && (
+                <div className="mb-8 bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap items-center gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mr-2">Questions:</span>
+                    <div className="flex flex-wrap gap-2">
+                        {quiz.questions.map((questionItem, idx) => {
+                            const isAnswered = !!answers[questionItem.question_id];
+                            const isActive = idx === currentQuestion;
+                            
+                            // Determine style based on answered & active state
+                            let bgClass = "bg-slate-50 text-slate-650 hover:bg-slate-100 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-700";
+                            if (isAnswered) {
+                                bgClass = "bg-indigo-500 text-white border-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:border-indigo-600 dark:hover:bg-indigo-700";
+                            }
+                            
+                            const activeOutline = isActive
+                                ? "ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 font-black"
+                                : "font-bold";
+
+                            return (
+                                <button
+                                    key={questionItem.question_id}
+                                    type="button"
+                                    onClick={() => setCurrentQuestion(idx)}
+                                    className={`flex h-8 w-8 items-center justify-center rounded-xl border text-xs transition-all ${bgClass} ${activeOutline}`}
+                                    title={`Question ${idx + 1}${isAnswered ? ' (Answered)' : ' (Unanswered)'}`}
+                                >
+                                    {idx + 1}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             <AnimatePresence mode="wait">
                 <motion.div key={currentQuestion} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>

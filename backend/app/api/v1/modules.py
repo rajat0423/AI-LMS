@@ -18,9 +18,18 @@ from app.schemas.module import (
 )
 from app.schemas.progress import LessonCompletionResponse
 from app.services import module_service, progress_service
-
+from app.core.cache import cache_get, cache_set, get_redis_client
 
 router = APIRouter(tags=["LMS"])
+
+async def clear_modules_cache():
+    try:
+        client = get_redis_client()
+        keys = await client.keys("modules:list:*")
+        if keys:
+            await client.delete(*keys)
+    except Exception:
+        pass
 
 
 @router.get(
@@ -28,12 +37,21 @@ router = APIRouter(tags=["LMS"])
     response_model=list[ModuleSummaryResponse],
     responses=error_responses(401, 403, 500),
 )
-def list_modules(
+async def list_modules(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_either),
 ):
     """List all learning modules."""
-    return module_service.list_modules(db, user=current_user)
+    cache_key = f"modules:list:user_year:{current_user.year if current_user.role_name == 'student' else 'admin'}"
+    cached = await cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    modules = module_service.list_modules(db, user=current_user)
+    # Serialize results to match response model structure
+    serialized = [ModuleSummaryResponse.model_validate(m).model_dump() for m in modules]
+    await cache_set(cache_key, serialized, ttl=600)  # cache for 10 minutes
+    return serialized
 
 
 @router.get(
@@ -56,13 +74,15 @@ def get_module(
     status_code=status.HTTP_201_CREATED,
     responses=error_responses(401, 403, 422, 500),
 )
-def create_module(
+async def create_module(
     module_data: ModuleCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     """Create a module (admin only)."""
-    return module_service.create_module(db, module_data)
+    res = module_service.create_module(db, module_data)
+    await clear_modules_cache()
+    return res
 
 
 @router.put(
@@ -70,14 +90,16 @@ def create_module(
     response_model=ModuleDetailResponse,
     responses=error_responses(401, 403, 404, 422, 500),
 )
-def update_module(
+async def update_module(
     module_id: uuid.UUID,
     module_data: ModuleUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     """Update a module (admin only)."""
-    return module_service.update_module(db, module_id, module_data)
+    res = module_service.update_module(db, module_id, module_data)
+    await clear_modules_cache()
+    return res
 
 
 @router.delete(
@@ -85,13 +107,14 @@ def update_module(
     status_code=status.HTTP_204_NO_CONTENT,
     responses=error_responses(401, 403, 404, 500),
 )
-def delete_module(
+async def delete_module(
     module_id: uuid.UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     """Delete a module and its lessons (admin only)."""
     module_service.delete_module(db, module_id)
+    await clear_modules_cache()
 
 
 @router.get(
@@ -128,13 +151,15 @@ def get_lesson(
     status_code=status.HTTP_201_CREATED,
     responses=error_responses(401, 403, 404, 422, 500),
 )
-def create_lesson(
+async def create_lesson(
     lesson_data: LessonCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     """Create a lesson (admin only)."""
-    return module_service.create_lesson(db, lesson_data)
+    res = module_service.create_lesson(db, lesson_data)
+    await clear_modules_cache()
+    return res
 
 
 @router.put(
@@ -142,14 +167,16 @@ def create_lesson(
     response_model=LessonResponse,
     responses=error_responses(401, 403, 404, 422, 500),
 )
-def update_lesson(
+async def update_lesson(
     lesson_id: uuid.UUID,
     lesson_data: LessonUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     """Update a lesson (admin only)."""
-    return module_service.update_lesson(db, lesson_id, lesson_data)
+    res = module_service.update_lesson(db, lesson_id, lesson_data)
+    await clear_modules_cache()
+    return res
 
 
 @router.delete(
@@ -157,13 +184,14 @@ def update_lesson(
     status_code=status.HTTP_204_NO_CONTENT,
     responses=error_responses(401, 403, 404, 500),
 )
-def delete_lesson(
+async def delete_lesson(
     lesson_id: uuid.UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     """Delete a lesson/topic (admin only)."""
     module_service.delete_lesson(db, lesson_id)
+    await clear_modules_cache()
 
 
 @router.post(

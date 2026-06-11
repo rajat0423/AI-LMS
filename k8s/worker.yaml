@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: lms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: lms-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["celery", "-A", "app.core.celery_app.celery_app", "worker", "--loglevel=info"]
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lms-secrets
+                  key: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: postgresql://postgres:$(POSTGRES_PASSWORD)@db-service:5432/lms
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lms-secrets
+                  key: SECRET_KEY
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lms-secrets
+                  key: GROQ_API_KEY
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: lms-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: lms-config
+                  key: REDIS_URL
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: lms-config
+                  key: CELERY_BROKER_URL
+            - name: CELERY_RESULT_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: lms-config
+                  key: CELERY_RESULT_BACKEND
+            - name: GROQ_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: lms-config
+                  key: GROQ_MODEL
+            - name: GROQ_TIMEOUT_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: lms-config
+                  key: GROQ_TIMEOUT_SECONDS
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: uploads-volume
+              mountPath: /app/uploads
+          livenessProbe:
+            exec:
+              command: ["celery", "-A", "app.core.celery_app.celery_app", "inspect", "ping"]
+            initialDelaySeconds: 20
+            periodSeconds: 60
+      volumes:
+        - name: uploads-volume
+          persistentVolumeClaim:
+            claimName: backend-uploads-pvc

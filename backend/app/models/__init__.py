@@ -14,5 +14,4 @@ from app.models.career_analysis import ResumeAnalysis
 from app.models.personality import PersonalityAnalysis
 from app.models.notification import Notification
 from app.models.quiz import Quiz, Question, Option, QuizAttempt, QuestionAttempt, QuestionBookmark
-from app.models.certificate import Certificate
 from app.models.community import DiscussionThread, DiscussionReply

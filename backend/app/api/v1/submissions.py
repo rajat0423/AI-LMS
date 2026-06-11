@@ -90,13 +90,13 @@ def update_my_submission(
     response_model=SubmissionDetailResponse,
     responses=error_responses(400, 401, 403, 404, 500, 502),
 )
-def generate_my_submission_feedback(
+async def generate_my_submission_feedback(
     submission_id: uuid.UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_student),
 ):
     """Generate AI feedback for a pending submission owned by the current student."""
-    return submission_service.generate_feedback_for_user_submission(
+    return await submission_service.generate_feedback_for_user_submission(
         db,
         current_user,
         submission_id,

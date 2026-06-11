@@ -9,16 +9,80 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchModal from './SearchModal';
 import NotificationPanel from './NotificationPanel';
+import { apiUrl } from '../api';
 
 function Navbar() {
     const location = useLocation();
-    const { user, logout } = useAuth();
+    const { user, token, isAuthenticated, logout } = useAuth();
     const { userState } = useGlobalUser();
     const { theme, toggleTheme } = useTheme();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    const fetchUnreadCount = async () => {
+        if (!isAuthenticated || !token) return;
+        try {
+            const res = await fetch(apiUrl('/api/v1/notifications/unread-count'), {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUnreadCount(data.unread_count || 0);
+            }
+        } catch (e) {
+            console.error("Failed to fetch unread count:", e);
+        }
+    };
+
+    useEffect(() => {
+        if (!isAuthenticated || !token) return;
+
+        fetchUnreadCount();
+
+        let intervalId = null;
+
+        const startPolling = () => {
+            if (!intervalId) {
+                intervalId = setInterval(fetchUnreadCount, 45000); // 45 seconds when tab is focused
+            }
+        };
+
+        const stopPolling = () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchUnreadCount();
+                startPolling();
+            } else {
+                stopPolling();
+            }
+        };
+
+        if (document.visibilityState === 'visible') {
+            startPolling();
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        const handleFocus = () => {
+            fetchUnreadCount();
+        };
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            stopPolling();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, [isAuthenticated, token]);
 
     useEffect(() => {
         // Route changes should close transient navigation surfaces.
@@ -127,9 +191,16 @@ function Navbar() {
                                 aria-label="Notifications"
                             >
                                 <Bell size={18} />
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-950 drop-shadow-sm"></span>
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-950 drop-shadow-sm"></span>
+                                )}
                             </button>
-                            <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+                            <NotificationPanel 
+                                isOpen={isNotifOpen} 
+                                onClose={() => setIsNotifOpen(false)} 
+                                unreadCount={unreadCount} 
+                                setUnreadCount={setUnreadCount} 
+                            />
                         </div>
                         
                         <div className="relative">
@@ -161,9 +232,6 @@ function Navbar() {
                                                 </NavLink>
                                                 <NavLink to="/settings" onClick={() => setIsProfileDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl transition-colors">
                                                     <Settings size={16} /> Settings
-                                                </NavLink>
-                                                <NavLink to="/report" onClick={() => setIsProfileDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl transition-colors">
-                                                    <FolderKanban size={16} /> My Reports
                                                 </NavLink>
                                             </div>
                                             <div className="p-2 border-t border-slate-100 dark:border-slate-800">

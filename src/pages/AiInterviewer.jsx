@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { apiUrl, getApiConfigurationError } from '../api';
 import { useAuth } from '../context/useAuth';
+import { useGlobalUser } from '../context/useGlobalUser';
 
 const MAX_RESUME_FILE_SIZE_BYTES = 4 * 1024 * 1024;
 
@@ -23,6 +24,7 @@ const interviewTypeOptions = [
 
 function AiInterviewer() {
     const { user, token } = useAuth();
+    const { refreshUserData } = useGlobalUser();
     const chatEndRef = useRef(null);
 
     // Setup state
@@ -44,6 +46,8 @@ function AiInterviewer() {
     const [isTyping, setIsTyping] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [error, setError] = useState('');
+    const [feedbackReport, setFeedbackReport] = useState(null);
+    const [liveFeedback, setLiveFeedback] = useState(null);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -51,6 +55,32 @@ function AiInterviewer() {
 
     // ── Quick Start (no setup, jump straight to chat) ─────────────────
     const handleQuickStart = async () => {
+        setIsPreparing(true);
+        let sessionDbId = null;
+        try {
+            const resSession = await fetch(apiUrl('/api/v1/my/interview-sessions'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    role_applied: 'general',
+                    job_description: 'General professional interview'
+                })
+            });
+            if (resSession.ok) {
+                const sessionData = await resSession.json();
+                sessionDbId = sessionData.session_id;
+            }
+        } catch (e) {
+            console.error("Failed to create quick session on backend:", e);
+        }
+
+        if (!sessionDbId) {
+            sessionDbId = crypto.randomUUID();
+        }
+
         const payload = {
             target_role: 'general',
             company_name: '',
@@ -62,7 +92,7 @@ function AiInterviewer() {
             key_points: [],
         };
         setInterviewSetup(payload);
-        await startInterviewSession(payload, crypto.randomUUID());
+        await startInterviewSession(payload, sessionDbId);
     };
 
     // ── Full Setup Start ─────────────────────────────────────────────
@@ -70,6 +100,7 @@ function AiInterviewer() {
         if (!targetRole.trim()) { setError('Enter a target role'); return; }
         if (!domain.trim()) { setError('Enter a domain'); return; }
         setError('');
+        setIsPreparing(true);
 
         let analysis = null;
         if (resumeFile) {
@@ -93,6 +124,31 @@ function AiInterviewer() {
             }
         }
 
+        let sessionDbId = null;
+        try {
+            const resSession = await fetch(apiUrl('/api/v1/my/interview-sessions'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    role_applied: targetRole.trim(),
+                    job_description: `${targetRole.trim()} ${domain.trim()} ${interviewType} interview`
+                })
+            });
+            if (resSession.ok) {
+                const sessionData = await resSession.json();
+                sessionDbId = sessionData.session_id;
+            }
+        } catch (e) {
+            console.error("Failed to create session on backend:", e);
+        }
+
+        if (!sessionDbId) {
+            sessionDbId = crypto.randomUUID();
+        }
+
         const keyPoints = [];
         if (analysis?.details?.skillsFound?.length) {
             keyPoints.push(`Skills: ${analysis.details.skillsFound.slice(0, 8).join(', ')}`);
@@ -109,7 +165,7 @@ function AiInterviewer() {
             key_points: keyPoints,
         };
         setInterviewSetup(payload);
-        await startInterviewSession(payload, crypto.randomUUID());
+        await startInterviewSession(payload, sessionDbId);
     };
 
     // ── Core chat engine ─────────────────────────────────────────────
@@ -117,6 +173,7 @@ function AiInterviewer() {
         setStage('chat');
         setSessionId(nextSessionId);
         setMessages([]);
+        setLiveFeedback(null);
         setInput('');
         setIsPreparing(true);
         setIsTyping(true);
@@ -145,6 +202,7 @@ function AiInterviewer() {
             if (!response.ok) throw new Error(result.detail || `Failed with status ${response.status}`);
 
             setMessages([{ role: 'ai', text: result.reply || 'Let us begin the interview.', timestamp: new Date() }]);
+            setLiveFeedback(result.feedback || null);
         } catch (e) {
             console.error('Interview start failed:', e);
             setStage('setup');
@@ -158,11 +216,13 @@ function AiInterviewer() {
     const sendMessage = async () => {
         if (!input.trim() || isTyping) return;
         const userText = input.trim();
-        const history = messages.map(m => ({ role: m.role, text: m.text }));
+        const nextMessages = [...messages, { role: 'user', text: userText, timestamp: new Date() }];
 
-        setMessages(prev => [...prev, { role: 'user', text: userText, timestamp: new Date() }]);
+        setMessages(nextMessages);
         setInput('');
         setIsTyping(true);
+
+        const history = messages.map(m => ({ role: m.role, text: m.text }));
 
         try {
             const configurationError = getApiConfigurationError();
@@ -182,6 +242,7 @@ function AiInterviewer() {
             if (!response.ok) throw new Error(data.detail || `Failed with status ${response.status}`);
 
             setMessages(prev => [...prev, { role: 'ai', text: data.reply || 'No reply received.', timestamp: new Date() }]);
+            setLiveFeedback(data.feedback || null);
         } catch (e) {
             setMessages(prev => [...prev, { role: 'ai', text: `Error: ${e.message}`, timestamp: new Date() }]);
         } finally {
@@ -197,6 +258,7 @@ function AiInterviewer() {
         setMessages([]);
         setInput('');
         setIsTyping(false);
+        setLiveFeedback(null);
         if (interviewSetup) startInterviewSession(interviewSetup, crypto.randomUUID());
     };
 
@@ -206,6 +268,47 @@ function AiInterviewer() {
         setInput('');
         setIsTyping(false);
         setError('');
+        setFeedbackReport(null);
+        setLiveFeedback(null);
+    };
+
+    const handleFinishEarly = async () => {
+        if (isTyping) return;
+        const userAnswers = messages.filter(m => m.role === 'user').map(m => m.text);
+        if (userAnswers.length === 0) {
+            handleBackToSetup();
+            return;
+        }
+
+        while (userAnswers.length < 3) {
+            userAnswers.push("No response provided.");
+        }
+
+        setIsTyping(true);
+        try {
+            const completeRes = await fetch(apiUrl(`/api/v1/my/interview-sessions/${sessionId}/complete`), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({
+                    answers: userAnswers
+                })
+            });
+            if (completeRes.ok) {
+                const feedbackData = await completeRes.json();
+                setFeedbackReport(feedbackData);
+                refreshUserData();
+            } else {
+                handleBackToSetup();
+            }
+        } catch (e) {
+            console.error(e);
+            handleBackToSetup();
+        } finally {
+            setIsTyping(false);
+        }
     };
 
     const handleResumeChange = (e) => {
@@ -216,6 +319,77 @@ function AiInterviewer() {
         setResumeFile(file);
         setError('');
     };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // FEEDBACK REPORT SCREEN — Premium analysis view
+    // ═══════════════════════════════════════════════════════════════════
+    if (feedbackReport) {
+        return (
+            <div className="w-full max-w-[1000px] mx-auto px-4 py-8 flex flex-col gap-6">
+                <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 md:p-12 flex flex-col gap-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 rounded-full">
+                                Analysis Completed
+                            </span>
+                            <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-3 font-heading">
+                                Interview Feedback Report
+                            </h2>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-bold">
+                                Role: {feedbackReport.role_applied}
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col items-center justify-center shrink-0 w-28 h-28 rounded-full bg-indigo-50 dark:bg-slate-800 border-4 border-indigo-600 dark:border-indigo-500">
+                            <span className="text-3xl font-black text-slate-800 dark:text-white">{feedbackReport.overall_score || 0}</span>
+                            <span className="text-[10px] uppercase font-bold text-slate-400">Score</span>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Strengths */}
+                        <div className="bg-emerald-50/40 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-900/30 p-6 rounded-2xl flex flex-col gap-3">
+                            <h3 className="font-extrabold text-emerald-800 dark:text-emerald-450 uppercase tracking-widest text-xs">Strengths Detected</h3>
+                            <ul className="space-y-2">
+                                {feedbackReport.strengths?.map((s, idx) => (
+                                    <li key={idx} className="text-sm font-semibold text-slate-700 dark:text-slate-350 list-disc list-inside leading-relaxed">{s}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Improvement Areas */}
+                        <div className="bg-rose-50/40 dark:bg-rose-950/10 border border-rose-100 dark:border-rose-900/30 p-6 rounded-2xl flex flex-col gap-3">
+                            <h3 className="font-extrabold text-rose-800 dark:text-rose-450 uppercase tracking-widest text-xs">Areas to Improve</h3>
+                            <ul className="space-y-2">
+                                {feedbackReport.improvement_areas?.map((imp, idx) => (
+                                    <li key={idx} className="text-sm font-semibold text-slate-700 dark:text-slate-350 list-disc list-inside leading-relaxed">{imp}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Better Suggestions */}
+                    <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl flex flex-col gap-4">
+                        <h3 className="font-extrabold text-slate-800 dark:text-white uppercase tracking-widest text-xs">Better Answer Suggestions</h3>
+                        <div className="space-y-3">
+                            {feedbackReport.better_answer_suggestions?.map((s, idx) => (
+                                <p key={idx} className="text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800">{s}</p>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => { setFeedbackReport(null); setStage('setup'); }}
+                        className="py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition-all text-center uppercase tracking-wider text-sm mt-4 font-extrabold"
+                    >
+                        Start New Practice Session
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     // ═══════════════════════════════════════════════════════════════════
     // SETUP SCREEN — Clean, minimal, premium
@@ -475,6 +649,9 @@ function AiInterviewer() {
                         <button onClick={handleBackToSetup} className="px-4 py-2 flex items-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold rounded-xl transition-colors text-sm">
                             <ArrowLeft size={16} /> <span className="hidden sm:inline">Setup</span>
                         </button>
+                        <button onClick={handleFinishEarly} className="px-4 py-2 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors text-sm">
+                            Finish
+                        </button>
                         <button onClick={handleReset} className="px-4 py-2 flex items-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold rounded-xl transition-colors text-sm">
                             <RefreshCw size={16} /> <span className="hidden sm:inline">Reset</span>
                         </button>
@@ -601,9 +778,61 @@ function AiInterviewer() {
                                     <h4 className="font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-2 mb-2 text-sm">
                                         <Sparkles size={14} /> Live Feedback
                                     </h4>
-                                    <p className="text-xs font-medium text-indigo-700/80 dark:text-indigo-300/80 leading-relaxed">
-                                        The AI Coach evaluates your responses for clarity, structure, and technical accuracy in real-time.
-                                    </p>
+                                    {!liveFeedback ? (
+                                        <p className="text-xs font-medium text-indigo-700/80 dark:text-indigo-300/80 leading-relaxed">
+                                            Answer the current question to receive a detailed analysis of relevance, clarity, structure, depth, mistakes, and missing points.
+                                        </p>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div>
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <span className="text-xs font-black uppercase tracking-widest text-indigo-500">Answer score</span>
+                                                    <span className="text-xl font-black text-indigo-900 dark:text-indigo-200">{liveFeedback.overall_score ?? 0}/100</span>
+                                                </div>
+                                                <p className="mt-2 text-xs font-semibold text-indigo-900/80 dark:text-indigo-200/80 leading-relaxed">
+                                                    {liveFeedback.answer_summary}
+                                                </p>
+                                            </div>
+
+                                            {liveFeedback.scores && (
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {Object.entries(liveFeedback.scores).map(([label, score]) => (
+                                                        <div key={label} className="rounded-xl bg-white/70 dark:bg-slate-900/50 p-2 border border-indigo-100 dark:border-indigo-900/30">
+                                                            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</span>
+                                                            <span className="text-sm font-black text-slate-800 dark:text-slate-100">{score}/100</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {[
+                                                { label: 'What worked', items: liveFeedback.strengths, color: 'text-emerald-700 dark:text-emerald-300' },
+                                                { label: 'Mistakes', items: liveFeedback.mistakes, color: 'text-rose-700 dark:text-rose-300' },
+                                                { label: 'Missing points', items: liveFeedback.missing_points, color: 'text-amber-700 dark:text-amber-300' },
+                                                { label: 'Better approach', items: liveFeedback.better_approach, color: 'text-indigo-800 dark:text-indigo-200' },
+                                            ].map(section => section.items?.length > 0 && (
+                                                <div key={section.label}>
+                                                    <h5 className={`text-[11px] font-black uppercase tracking-widest ${section.color}`}>{section.label}</h5>
+                                                    <ul className="mt-1.5 space-y-1.5">
+                                                        {section.items.map((item, index) => (
+                                                            <li key={`${section.label}-${index}`} className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed">
+                                                                {index + 1}. {item}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ))}
+
+                                            {liveFeedback.improved_answer && (
+                                                <div className="rounded-xl bg-white/70 dark:bg-slate-900/50 p-3 border border-indigo-100 dark:border-indigo-900/30">
+                                                    <h5 className="text-[11px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">Improved answer</h5>
+                                                    <p className="mt-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed">
+                                                        {liveFeedback.improved_answer}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

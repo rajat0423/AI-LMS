@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 from app.api.v1.auth import router as auth_router
 from app.api.v1.career_analysis import router as career_analysis_router
 from app.api.v1.modules import router as modules_router
@@ -24,8 +25,8 @@ from app.api.v1.notifications import router as notifications_router
 from app.api.v1.admin_users import router as admin_users_router
 from app.api.v1.admin_content import router as admin_content_router
 from app.api.v1.quiz import router as quiz_router
-from app.api.v1.certificate import router as certificate_router
 from app.api.v1.community import router as community_router
+from app.api.v1.tasks import router as tasks_router
 from app.database import Base, engine, SessionLocal
 from app.models.user import User
 from app.models.role import Role
@@ -194,39 +195,83 @@ def start_seeding_task():
 
 
 
-# Simple in-memory rate limiter: 60 requests per minute per IP
+# Redis sliding window rate limiter: 60 requests per minute per IP
 RATE_LIMIT_WINDOW = 60  # seconds
 RATE_LIMIT_MAX = 60     # max requests per window
 _rate_limit_store: dict[str, list[float]] = defaultdict(list)
 
+from app.core.cache import get_redis_client
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
-    """Basic sliding-window rate limiter by client IP."""
+    """Sliding-window rate limiter by client IP backed by Redis."""
+    # Skip rate limiting if disabled via environment variable
+    if os.environ.get("DISABLE_RATE_LIMITER") == "true":
+        return await call_next(request)
+
     # Skip rate limiting for health checks and docs
-    if request.url.path in ("/health", "/ping", "/api/health", "/api/ping", "/", "/docs", "/openapi.json", "/redoc"):
+    if request.url.path in ("/health", "/ping", "/api/health", "/api/ping", "/", "/docs", "/openapi.json", "/redoc", "/metrics"):
         return await call_next(request)
 
     client_ip = request.client.host if request.client else "unknown"
     if client_ip == "testclient":
         return await call_next(request)
 
+    # Resolve shared NAT: check for X-Forwarded-For header
+    x_forwarded_for = request.headers.get("X-Forwarded-For")
+    if x_forwarded_for:
+        client_ip = x_forwarded_for.split(",")[0].strip()
+
     now = time.time()
+    key = f"rate_limit:{client_ip}"
 
-    # Clean old entries
-    _rate_limit_store[client_ip] = [
-        ts for ts in _rate_limit_store[client_ip] if now - ts < RATE_LIMIT_WINDOW
-    ]
+    try:
+        client = get_redis_client()
+        pipe = client.pipeline()
+        pipe.zremrangebyscore(key, 0, now - RATE_LIMIT_WINDOW)
+        pipe.zadd(key, {str(now): now})
+        pipe.zcard(key)
+        pipe.expire(key, RATE_LIMIT_WINDOW + 5)
+        _, _, request_count, _ = await pipe.execute()
 
-    if len(_rate_limit_store[client_ip]) >= RATE_LIMIT_MAX:
-        return build_error_response(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            message="Rate limit exceeded. Please slow down.",
-            headers={"Retry-After": str(RATE_LIMIT_WINDOW)},
-        )
+        if request_count > RATE_LIMIT_MAX:
+            return build_error_response(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                message="Rate limit exceeded. Please slow down.",
+                headers={"Retry-After": str(RATE_LIMIT_WINDOW)},
+            )
+    except Exception as exc:
+        logger.warning("Redis rate limiter failed, falling back to local memory: %s", exc)
+        global _rate_limit_store
+        _rate_limit_store[client_ip] = [
+            ts for ts in _rate_limit_store[client_ip] if now - ts < RATE_LIMIT_WINDOW
+        ]
+        if len(_rate_limit_store[client_ip]) >= RATE_LIMIT_MAX:
+            return build_error_response(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                message="Rate limit exceeded. Please slow down.",
+                headers={"Retry-After": str(RATE_LIMIT_WINDOW)},
+            )
+        _rate_limit_store[client_ip].append(now)
 
-    _rate_limit_store[client_ip].append(now)
     response = await call_next(request)
+    return response
+
+
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self' https:; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:;"
+    )
     return response
 
 
@@ -268,8 +313,8 @@ app.include_router(notifications_router, prefix="/api/v1")
 app.include_router(admin_users_router, prefix="/api/v1")
 app.include_router(admin_content_router, prefix="/api/v1")
 app.include_router(quiz_router, prefix="/api/v1")
-app.include_router(certificate_router, prefix="/api/v1")
 app.include_router(community_router, prefix="/api/v1")
+app.include_router(tasks_router, prefix="/api/v1")
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(_request: Request, exc: HTTPException):
@@ -347,3 +392,28 @@ def api_ping():
 @app.head("/api/ping")
 def api_ping_head():
     return Response(status_code=200)
+
+
+from sqlalchemy.sql import text
+from sqlalchemy.orm import Session
+from fastapi import Depends
+from app.database import get_db
+
+@app.get("/health/ready")
+def readiness_check(db: Session = Depends(get_db)):
+    """Kubernetes readiness probe checking db availability."""
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ready", "database": "connected"}
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Database connection offline: {exc}")
+
+
+@app.get("/health/live")
+def liveness_check():
+    """Kubernetes liveness probe."""
+    return {"status": "live"}
+
+
+# Instrument FastAPI app to collect and expose Prometheus metrics at /metrics
+Instrumentator().instrument(app).expose(app, endpoint="/metrics")

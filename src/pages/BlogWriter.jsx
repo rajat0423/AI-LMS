@@ -4,6 +4,7 @@ import { apiUrl, getApiConfigurationError } from '../api';
 import ScoreCircle from '../components/ScoreCircle';
 import { useAuth } from '../context/useAuth';
 import { getAuthHeaders } from '../services/api';
+import BackButton from '../components/BackButton';
 import {
     BookOpen, CheckCircle2, CloudUpload, FileText, Lock, CalendarDays, Clock,
     Info, AlertTriangle, Sparkles, PenLine, ChevronDown, ChevronUp, RefreshCw,
@@ -234,6 +235,7 @@ function BlogWriter() {
 
     return (
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10 flex flex-col gap-6">
+            <BackButton />
             {/* Status Bar */}
             <StatusBar status={status} />
 

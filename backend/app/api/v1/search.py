@@ -19,7 +19,6 @@ TOOL_CATALOG = [
     {"type": "tool", "name": "Blog Writer", "description": "Write and publish blogs with AI review", "path": "/blog-writer"},
     {"type": "tool", "name": "Speaking Exercise", "description": "Practice speaking skills", "path": "/speaking"},
     {"type": "tool", "name": "Read Comprehension", "description": "Improve reading comprehension", "path": "/read-comprehension"},
-    {"type": "tool", "name": "Employability Report", "description": "View your career readiness report", "path": "/report"},
     {"type": "tool", "name": "AI Tools Hub", "description": "All AI-powered tools in one place", "path": "/ai-tools"},
     {"type": "tool", "name": "Profile", "description": "View your profile and progress", "path": "/profile"},
     {"type": "tool", "name": "Dashboard", "description": "Your learning dashboard", "path": "/dashboard"},

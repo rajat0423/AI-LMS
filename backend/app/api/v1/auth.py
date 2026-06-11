@@ -180,5 +180,19 @@ def google_auth(request_data: GoogleLoginRequest, db: Session = Depends(get_db))
         db.commit()
         db.refresh(user)
         
+        # Auto-create active premium subscription
+        from app.models.subscription import Subscription
+        from datetime import datetime, timedelta
+        new_sub = Subscription(
+            user_id=user.user_id,
+            plan_type="premium",
+            status="active",
+            current_period_start=datetime.utcnow(),
+            current_period_end=datetime.utcnow() + timedelta(days=365)
+        )
+        db.add(new_sub)
+        db.commit()
+        db.refresh(user)
+        
     return _build_token_response(user)
 

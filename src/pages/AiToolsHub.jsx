@@ -10,7 +10,8 @@ import {
     Zap,
     Briefcase
 } from 'lucide-react';
- 
+import BackButton from '../components/BackButton';
+
 const aiTools = [
     {
         id: 'mock-interview',
@@ -71,11 +72,12 @@ const aiTools = [
 
 export default function AiToolsHub() {
     return (
-        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-screen flex flex-col">
+            <BackButton fallbackPath="/dashboard" />
             <div className="flex flex-col gap-8">
-                
+
                 {/* Hub Header */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
@@ -102,13 +104,13 @@ export default function AiToolsHub() {
                 {/* Tools Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                     {aiTools.map((tool, i) => (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.98, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             transition={{ delay: 0.1 * i, duration: 0.4 }}
                             key={tool.id}
                         >
-                            <Link 
+                            <Link
                                 to={tool.path}
                                 className="group flex flex-col h-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-premium p-6 sm:p-8 hover:-translate-y-1 hover:shadow-soft hover:border-primary-200 dark:hover:border-primary-900 transition-all duration-300"
                             >
@@ -126,7 +128,7 @@ export default function AiToolsHub() {
                                         <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                                     </div>
                                 </div>
-                                
+
                                 <div className="flex flex-col flex-1">
                                     <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2.5 font-heading">
                                         {tool.title}
@@ -135,7 +137,7 @@ export default function AiToolsHub() {
                                         {tool.description}
                                     </p>
                                 </div>
-                                
+
                                 <div className="mt-8 flex items-center gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                                     <Zap size={14} className="fill-current" /> Initialize Module
                                 </div>

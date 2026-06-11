@@ -32,12 +32,12 @@ router = APIRouter(tags=["Content Tools"])
     response_model=EmailGenerateResponse,
     responses=error_responses(400, 401, 403, 422, 500, 502),
 )
-def generate_email(
+async def generate_email(
     request_data: EmailGenerateRequest,
     _current_user: User = Depends(require_student),
 ) -> EmailGenerateResponse:
     """Generate a professional email draft from a brief description."""
-    return content_tools_service.generate_email(
+    return await content_tools_service.generate_email(
         email_prompt=request_data.email_prompt,
         tone=request_data.tone,
         recipient_name=request_data.recipient_name,
@@ -57,12 +57,12 @@ def generate_email(
     response_model=EmailAssistResponse,
     responses=error_responses(400, 401, 403, 422, 500, 502),
 )
-def assist_email(
+async def assist_email(
     request_data: EmailAssistRequest,
     _current_user: User = Depends(require_student),
 ) -> EmailAssistResponse:
     """Run a targeted AI action (grammar check, rewrite, etc.) on an existing email draft."""
-    return content_tools_service.assist_email(
+    return await content_tools_service.assist_email(
         action=request_data.action,
         subject=request_data.subject,
         body=request_data.body,
@@ -82,12 +82,12 @@ def assist_email(
     response_model=BlogAssistResponse,
     responses=error_responses(400, 401, 403, 422, 500, 502),
 )
-def assist_blog(
+async def assist_blog(
     request_data: BlogAssistRequest,
     _current_user: User = Depends(require_student),
 ) -> BlogAssistResponse:
     """Run a publish-check (grammar, format, quality score) on a blog draft."""
-    return content_tools_service.assist_blog(
+    return await content_tools_service.assist_blog(
         action=request_data.action,
         title=request_data.title,
         content=request_data.content,
@@ -131,13 +131,13 @@ def list_published_blogs(
     response_model=TailoredResumeResponse,
     responses=error_responses(400, 401, 403, 422, 500, 502),
 )
-def tailor_resume(
+async def tailor_resume(
     resume_file: UploadFile = File(...),
     job_description: str = Form(...),
     _current_user: User = Depends(require_student),
 ) -> TailoredResumeResponse:
     """Upload a PDF resume and job description to generate an ATS-optimized tailored resume JSON."""
-    return content_tools_service.tailor_resume(
+    return await content_tools_service.tailor_resume(
         resume_file=resume_file,
         job_description=job_description,
     )

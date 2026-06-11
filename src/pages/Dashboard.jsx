@@ -59,7 +59,7 @@ export default function Dashboard() {
             const hasCompletedQuiz = (userState.stats.completed_lessons || 0) > 0;
             const hasTakenInterview = !!userState.stats.has_taken_interview;
             const hasDraftedEmail = localStorage.getItem('nlm-has-drafted-email') === 'true';
-            
+
             setChecklist([
                 { id: 1, text: 'Analyze Resume against target Job Description', completed: hasUploadedResume, xp: 100 },
                 { id: 2, text: 'Complete your first Reading Comprehension topic quiz', completed: hasCompletedQuiz, xp: 150 },
@@ -68,6 +68,48 @@ export default function Dashboard() {
             ]);
         }
     }, [userState]);
+
+    const streakCount = userState?.streakCount || 0;
+    const completedMissionsXp = checklist.filter(item => item.completed).reduce((sum, item) => sum + item.xp, 0);
+    const totalXp = (streakCount * 150) + completedMissionsXp;
+
+    const milestones = [
+        {
+            id: 'joined',
+            title: 'Joined Aao Seekhe Live platform',
+            desc: `Onboarded into customized ${user?.year || 'Year 3'} curriculum successfully.`,
+            completed: true,
+            time: user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Day 1'
+        },
+        {
+            id: 'assessment',
+            title: 'Initial Assessment Calibrated',
+            desc: 'Traits saved and initial scores set for module accuracy.',
+            completed: !!userState.hasTakenAssessment,
+            time: userState.hasTakenAssessment ? 'Calibrated' : 'Pending'
+        },
+        {
+            id: 'resume',
+            title: 'Resume Analyzed against Job Description',
+            desc: 'ATS match score generated and keyword improvements unlocked.',
+            completed: (userState.stats?.resume_score || 0) > 0,
+            time: (userState.stats?.resume_score || 0) > 0 ? 'Analyzed' : 'Locked'
+        },
+        {
+            id: 'quiz',
+            title: 'First Topic Quiz Completed',
+            desc: 'Completed comprehension quizzes and set performance stats.',
+            completed: (userState.stats?.completed_lessons || 0) > 0,
+            time: (userState.stats?.completed_lessons || 0) > 0 ? 'Completed' : 'Locked'
+        },
+        {
+            id: 'interview',
+            title: 'Mock Interview with AI Coach',
+            desc: 'Simulated a live tech/HR interview with adaptive response prep.',
+            completed: !!userState.stats?.has_taken_interview,
+            time: userState.stats?.has_taken_interview ? 'Completed' : 'Locked'
+        }
+    ];
 
     // State for interactive notification or tips
     const [activeTip, setActiveTip] = useState(0);
@@ -89,55 +131,54 @@ export default function Dashboard() {
     }
 
     const displayName = userState?.name || user?.name || 'Student';
-    
+
     // BACKEND-INTEGRATED DYNAMIC DATA
-    const streakCount = userState?.streakCount || 0;
     const completionPercent = userState?.stats?.completion_percentage    // Harmonized Metric Config matching brand colors (Sleek Professional SaaS Highlights)
     // Dynamic CTA Links render if score is not generated. Audited status labels for absolute readability.
     const metrics = [
-        { 
-            label: 'Avg Accuracy', 
-            val: userState.stats?.avg_accuracy || 0, 
-            icon: TrendingUp, 
-            color: 'text-primary-600 dark:text-primary-400', 
-            bg: 'bg-primary-50 dark:bg-primary-950/20', 
+        {
+            label: 'Avg Accuracy',
+            val: userState.stats?.avg_accuracy || 0,
+            icon: TrendingUp,
+            color: 'text-primary-600 dark:text-primary-400',
+            bg: 'bg-primary-50 dark:bg-primary-950/20',
             border: 'border-primary-100 dark:border-primary-900/20',
             status: userState.stats?.avg_accuracy ? 'Active Quiz' : 'No Quizzes',
-            statusBg: userState.stats?.avg_accuracy 
-                ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-900/30' 
+            statusBg: userState.stats?.avg_accuracy
+                ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-900/30'
                 : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-800',
-            tip: userState.stats?.avg_accuracy 
-                ? 'Excellent readiness! Keep completing quizzes.' 
+            tip: userState.stats?.avg_accuracy
+                ? 'Excellent readiness! Keep completing quizzes.'
                 : 'Take your first topic quiz to generate accuracy stats!',
             cta: !userState.stats?.avg_accuracy ? { label: 'Start Quiz', path: '/read-comprehension' } : null
         },
-        { 
-            label: 'Module Accuracy', 
-            val: `${userState.stats?.confidence_score || 0}%`, 
-            icon: Target, 
-            color: 'text-violet-600 dark:text-violet-400', 
-            bg: 'bg-violet-50 dark:bg-violet-950/20', 
+        {
+            label: 'Module Accuracy',
+            val: `${userState.stats?.confidence_score || 0}%`,
+            icon: Target,
+            color: 'text-violet-600 dark:text-violet-400',
+            bg: 'bg-violet-50 dark:bg-violet-950/20',
             border: 'border-violet-100 dark:border-violet-900/20',
             status: userState.stats?.confidence_score > 60 ? 'High Accuracy' : 'Onboarding',
-            statusBg: userState.stats?.confidence_score > 60 
-                ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-900/30' 
+            statusBg: userState.stats?.confidence_score > 60
+                ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-900/30'
                 : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-800',
             tip: 'Derived from your recent module assessments and quizzes.',
             cta: null
         },
-        { 
-            label: 'Resume ATS Match', 
-            val: userState.stats?.resume_score || 0, 
-            icon: FileText, 
-            color: 'text-emerald-600 dark:text-emerald-400', 
-            bg: 'bg-emerald-50 dark:bg-emerald-950/20', 
+        {
+            label: 'Resume ATS Match',
+            val: userState.stats?.resume_score || 0,
+            icon: FileText,
+            color: 'text-emerald-600 dark:text-emerald-400',
+            bg: 'bg-emerald-50 dark:bg-emerald-950/20',
             border: 'border-emerald-100 dark:border-emerald-900/20',
             status: userState.stats?.resume_score ? 'ATS Analyzed' : 'Not Uploaded',
-            statusBg: userState.stats?.resume_score 
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30' 
+            statusBg: userState.stats?.resume_score
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30'
                 : 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-300 border border-amber-200/50',
-            tip: userState.stats?.resume_score 
-                ? 'Add active keywords to push score above 85%.' 
+            tip: userState.stats?.resume_score
+                ? 'Add active keywords to push score above 85%.'
                 : 'Analyze your resume to generate ATS match stats!',
             cta: !userState.stats?.resume_score ? { label: 'Analyze Resume', path: '/resume' } : null
         }
@@ -145,46 +186,46 @@ export default function Dashboard() {
 
     // AI Tools Hub configured with cohesive brand styling and high-contrast texts
     const quickActions = [
-        { 
-            label: 'Mock Interviewer', 
-            path: '/interview', 
-            desc: 'Simulate a live technical or HR mock session.', 
-            icon: Target, 
-            col: 'text-primary-600 dark:text-primary-400', 
-            bg: 'bg-primary-50 dark:bg-primary-950/20', 
+        {
+            label: 'Mock Interviewer',
+            path: '/interview',
+            desc: 'Simulate a live technical or HR mock session.',
+            icon: Target,
+            col: 'text-primary-600 dark:text-primary-400',
+            bg: 'bg-primary-50 dark:bg-primary-950/20',
             border: 'border-primary-100 dark:border-primary-900/20',
             badge: 'AI Coach',
             time: '15 mins'
         },
-        { 
-            label: 'ATS Score Calculator', 
-            path: '/resume', 
-            desc: 'Scan resume keywords against target Job Descriptions to calculate your match score.', 
-            icon: FileText, 
-            col: 'text-violet-600 dark:text-violet-400', 
-            bg: 'bg-violet-50 dark:bg-violet-950/20', 
+        {
+            label: 'ATS Score Calculator',
+            path: '/resume',
+            desc: 'Scan resume keywords against target Job Descriptions to calculate your match score.',
+            icon: FileText,
+            col: 'text-violet-600 dark:text-violet-400',
+            bg: 'bg-violet-50 dark:bg-violet-950/20',
             border: 'border-violet-100 dark:border-violet-900/20',
             badge: 'ATS Scanner',
             time: '5 mins'
         },
-        { 
-            label: 'Email Generator', 
-            path: '/email-writer', 
-            desc: 'Draft perfect outreach, cold-call, and thank you emails.', 
-            icon: Mail, 
-            col: 'text-fuchsia-600 dark:text-fuchsia-400', 
-            bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/20', 
+        {
+            label: 'Email Generator',
+            path: '/email-writer',
+            desc: 'Draft perfect outreach, cold-call, and thank you emails.',
+            icon: Mail,
+            col: 'text-fuchsia-600 dark:text-fuchsia-400',
+            bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/20',
             border: 'border-fuchsia-100 dark:border-fuchsia-900/20',
             badge: 'Outreach',
             time: '2 mins'
         },
-        { 
-            label: 'Blog & Article Writer', 
-            path: '/blog-writer', 
-            desc: 'Create high-impact technical articles to boost your profile.', 
-            icon: PenTool, 
-            col: 'text-emerald-600 dark:text-emerald-400', 
-            bg: 'bg-emerald-50 dark:bg-emerald-950/20', 
+        {
+            label: 'Blog & Article Writer',
+            path: '/blog-writer',
+            desc: 'Create high-impact technical articles to boost your profile.',
+            icon: PenTool,
+            col: 'text-emerald-600 dark:text-emerald-400',
+            bg: 'bg-emerald-50 dark:bg-emerald-950/20',
             border: 'border-emerald-100 dark:border-emerald-900/20',
             badge: 'SaaS Creator',
             time: '10 mins'
@@ -192,18 +233,18 @@ export default function Dashboard() {
     ];
 
     const toggleChecklistItem = (id) => {
-        setChecklist(prev => prev.map(item => 
+        setChecklist(prev => prev.map(item =>
             item.id === id ? { ...item, completed: !item.completed } : item
         ));
     };
 
     return (
         <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 flex flex-col gap-6 md:gap-8 min-h-screen">
-            
+
             {/* Header: Warm welcome with brand royal blue coordinates & High contrast texts */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800 shadow-premium relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-80 h-80 bg-primary-500/5 dark:bg-primary-500/10 rounded-full blur-[100px] pointer-events-none" />
-                
+
                 <div className="relative z-10 flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                         <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-900/30 rounded-full">
@@ -214,8 +255,8 @@ export default function Dashboard() {
                         </span>
                         <img src="/logo.webp" alt="Aao Seekhe Live" className="h-6 w-auto ml-2" />
                     </div>
-                    
-                    <motion.h1 
+
+                    <motion.h1
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white"
@@ -261,7 +302,7 @@ export default function Dashboard() {
 
             {/* BENTO GRID LEVEL 1: Primary Module Hero + Consistency Tree */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-                
+
                 {/* Hero / Active Learning Progress - 8 cols (Vibrant Royal Blue Gradient with maximized contrast text) */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.99 }}
@@ -284,7 +325,7 @@ export default function Dashboard() {
                                 Mastering Reading Comprehension
                             </h2>
                             <p className="text-slate-350 text-sm sm:text-base leading-relaxed max-w-xl font-medium">
-                                Elevate your communication skills with short, interactive passages, context clues, and structured AI response prep. 
+                                Elevate your communication skills with short, interactive passages, context clues, and structured AI response prep.
                             </p>
                         </div>
 
@@ -323,7 +364,7 @@ export default function Dashboard() {
                     className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-premium overflow-hidden flex flex-col relative bg-grid-pattern"
                 >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-[40px] pointer-events-none" />
-                    
+
                     <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between gap-6 relative z-10">
                         <div className="flex items-center justify-between">
                             <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2 text-[10px] uppercase tracking-wider">
@@ -348,7 +389,7 @@ export default function Dashboard() {
                             <div className="flex flex-col gap-0.5 pl-4 border-l border-slate-200 dark:border-slate-800">
                                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Career XP</span>
                                 <span className="font-extrabold text-sm text-slate-800 dark:text-slate-100">
-                                    <AnimatedNumber value={streakCount > 0 ? streakCount * 150 : 0} duration={2} suffix=" XP" />
+                                    <AnimatedNumber value={totalXp} duration={2} suffix=" XP" />
                                 </span>
                             </div>
                         </div>
@@ -370,13 +411,13 @@ export default function Dashboard() {
                             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border border-slate-200/20 ${m.bg} ${m.border} ${m.color} group-hover:scale-105 transition-transform duration-300 shadow-soft`}>
                                 <m.icon size={18} />
                             </div>
-                            
+
                             {/* High contrast badge instead of static charts */}
                             <span className={`px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider ${m.statusBg}`}>
                                 {m.status}
                             </span>
                         </div>
-                        
+
                         <div className="mt-4">
                             <div className="text-3xl font-black text-slate-950 dark:text-white tracking-tight flex items-baseline justify-between font-heading">
                                 {m.val > 0 ? (
@@ -385,8 +426,8 @@ export default function Dashboard() {
                                     <span className="text-base font-bold text-slate-400 dark:text-slate-500">Not Generated</span>
                                 )}
                                 {m.cta && (
-                                    <Link 
-                                        to={m.cta.path} 
+                                    <Link
+                                        to={m.cta.path}
                                         className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 underline uppercase tracking-wider shrink-0 ml-2"
                                     >
                                         {m.cta.label} →
@@ -411,15 +452,15 @@ export default function Dashboard() {
                 transition={{ delay: 0.2 }}
                 className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-premium p-6 sm:p-8"
             >
-                 <div className="flex items-center justify-between mb-6 md:mb-8">
+                <div className="flex items-center justify-between mb-6 md:mb-8">
                     <div>
                         <h3 className="text-sm sm:text-base font-black tracking-widest uppercase text-slate-800 dark:text-white flex items-center gap-2">
                             <Zap size={14} className="text-primary-600 dark:text-primary-400 animate-pulse" /> AI Command Hub
                         </h3>
                         <p className="text-xs text-slate-500 dark:text-slate-450 font-medium mt-1">Select an intelligent module to initialize career optimization.</p>
                     </div>
-                    <Link 
-                        to="/ai-tools" 
+                    <Link
+                        to="/ai-tools"
                         className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 uppercase tracking-widest flex items-center gap-1"
                     >
                         Command Center →
@@ -442,7 +483,7 @@ export default function Dashboard() {
                                         {a.badge}
                                     </span>
                                 </div>
-                                
+
                                 <div>
                                     <span className="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors block leading-tight font-heading">
                                         {a.label}
@@ -452,7 +493,7 @@ export default function Dashboard() {
                                     </p>
                                 </div>
                             </div>
-                            
+
                             <div className="flex items-center gap-1.5 mt-6 border-t border-slate-200/20 dark:border-slate-800/20 pt-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                                 <Clock size={12} />
                                 <span>Takes {a.time}</span>
@@ -464,7 +505,7 @@ export default function Dashboard() {
 
             {/* BENTO GRID LEVEL 4: Learning Checklist (Active Goals) & Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-                
+
                 {/* Daily Checklist - 7 cols */}
                 <motion.div
                     initial={{ opacity: 0, y: 15 }}
@@ -489,25 +530,22 @@ export default function Dashboard() {
                             <button
                                 key={item.id}
                                 onClick={() => toggleChecklistItem(item.id)}
-                                className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all ${
-                                    item.completed 
-                                        ? 'bg-emerald-50/30 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-900/20 text-emerald-800/70 dark:text-emerald-350/60 line-through' 
-                                        : 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:border-primary-200 dark:hover:border-primary-900 hover:bg-slate-50/80 dark:hover:bg-slate-900/80 shadow-xs'
-                                }`}
+                                className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all ${item.completed
+                                    ? 'bg-emerald-50/30 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-900/20 text-emerald-800/70 dark:text-emerald-350/60 line-through'
+                                    : 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:border-primary-200 dark:hover:border-primary-900 hover:bg-slate-50/80 dark:hover:bg-slate-900/80 shadow-xs'
+                                    }`}
                             >
-                                <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 border transition-all ${
-                                    item.completed 
-                                        ? 'bg-emerald-550 border-emerald-550 text-white' 
-                                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
-                                }`}>
+                                <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 border transition-all ${item.completed
+                                    ? 'bg-emerald-550 border-emerald-550 text-white'
+                                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                                    }`}>
                                     {item.completed && <CheckCircle2 size={14} className="stroke-[3px]" />}
                                 </div>
                                 <span className="flex-1 text-sm font-medium leading-normal">{item.text}</span>
-                                <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 px-2.5 py-0.5 rounded-full ${
-                                    item.completed
-                                        ? 'bg-emerald-100/60 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300'
-                                        : 'bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 border border-primary-100/50 dark:border-primary-900/30'
-                                }`}>
+                                <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 px-2.5 py-0.5 rounded-full ${item.completed
+                                    ? 'bg-emerald-100/60 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300'
+                                    : 'bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 border border-primary-100/50 dark:border-primary-900/30'
+                                    }`}>
                                     +{item.xp} XP
                                 </span>
                             </button>
@@ -526,71 +564,30 @@ export default function Dashboard() {
                         <h3 className="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-800 dark:text-white flex items-center gap-2 mb-4">
                             <Award size={14} className="text-primary-600 dark:text-primary-400" /> Career Milestones
                         </h3>
-                        
+
                         <div className="relative border-l border-slate-100 dark:border-slate-800 pl-5 ml-2.5 space-y-5 py-2">
-                            <div className="relative">
-                                <span className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-slate-950 bg-emerald-500" />
-                                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">2 hours ago</p>
-                                <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-205 mt-0.5">Assessment calibrated successfully</h4>
-                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-0.5">Traits saved and initial scores set for module accuracy.</p>
-                            </div>
-                            <div className="relative">
-                                <span className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-slate-950 bg-primary-500" />
-                                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Yesterday</p>
-                                <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-205 mt-0.5">Joined Aao Seekhe Live platform</h4>
-                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-0.5">Onboarded into customized Year 3 curriculum successfully.</p>
-                            </div>
+                            {milestones.map((m, idx) => (
+                                <div key={idx} className="relative">
+                                    <span className={`absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-slate-950 ${m.completed ? 'bg-emerald-550' : 'bg-slate-300 dark:bg-slate-750'
+                                        }`} />
+                                    <p className={`text-[10px] font-bold uppercase tracking-wider ${m.completed ? 'text-emerald-600 dark:text-emerald-450' : 'text-slate-400 dark:text-slate-500'
+                                        }`}>
+                                        {m.time}
+                                    </p>
+                                    <h4 className={`text-xs sm:text-sm font-bold mt-0.5 ${m.completed ? 'text-slate-900 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500'
+                                        }`}>
+                                        {m.title}
+                                    </h4>
+                                    <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed mt-0.5">
+                                        {m.desc}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
-
-                    {(() => {
-                        const completedModules = userState?.stats?.completed_modules || 0;
-                        const isReportLocked = completedModules < 3;
-                        return (
-                            <div className={`p-4 rounded-2xl text-white shadow-soft flex items-center justify-between gap-4 mt-2 border ${
-                                isReportLocked 
-                                    ? 'bg-slate-950 border-slate-100 dark:border-slate-800 text-slate-350 shadow-soft' 
-                                    : 'bg-gradient-to-br from-primary-600 to-primary-800 dark:from-slate-900 dark:to-slate-950 border-primary-500/20'
-                            }`}>
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-9 h-9 rounded-xl backdrop-blur flex items-center justify-center border ${
-                                        isReportLocked 
-                                            ? 'bg-slate-100/50 dark:bg-slate-900/50 border-slate-200/20 dark:border-slate-700/50 text-slate-500 dark:text-slate-400' 
-                                            : 'bg-white/10 border-white/10 text-white'
-                                    }`}>
-                                        {isReportLocked 
-                                            ? <Lock size={16} />
-                                            : <Star size={18} className="text-yellow-400 fill-yellow-400 animate-pulse" />
-                                        }
-                                    </div>
-                                    <div>
-                                        <h4 className={`text-xs font-bold leading-tight ${isReportLocked ? 'text-slate-800 dark:text-slate-100' : 'text-white'}`}>
-                                            {isReportLocked ? 'Employability Report Locked' : 'Employability Report Ready!'}
-                                        </h4>
-                                        <p className={`text-[10px] font-semibold mt-0.5 ${isReportLocked ? 'text-slate-500 dark:text-slate-400' : 'text-white/70'}`}>
-                                            {isReportLocked 
-                                                ? `Complete ${3 - completedModules} more module${3 - completedModules > 1 ? 's' : ''} to unlock` 
-                                                : 'Your career readiness report is available'
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                                <Link 
-                                    to="/report" 
-                                    className={`p-2 rounded-xl border transition-colors font-bold ${
-                                        isReportLocked 
-                                            ? 'bg-slate-50 border-slate-100 text-slate-300 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-600 cursor-default' 
-                                            : 'bg-white/20 hover:bg-white/30 text-white border-white/15'
-                                    }`}
-                                >
-                                    <ChevronRight size={14} />
-                                </Link>
-                            </div>
-                        );
-                    })()}
                 </motion.div>
             </div>
-            
+
         </div>
     );
 }
