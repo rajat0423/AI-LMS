@@ -8,6 +8,7 @@ import {
 import { apiUrl, getApiConfigurationError } from '../api';
 import { useAuth } from '../context/useAuth';
 import { useGlobalUser } from '../context/useGlobalUser';
+import BackButton from '../components/BackButton';
 
 const MAX_RESUME_FILE_SIZE_BYTES = 4 * 1024 * 1024;
 
@@ -397,6 +398,7 @@ function AiInterviewer() {
     if (stage === 'setup') {
         return (
             <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
+                <BackButton fallbackPath="/ai-tools" />
 
                 {/* Hero Header */}
                 <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden">
