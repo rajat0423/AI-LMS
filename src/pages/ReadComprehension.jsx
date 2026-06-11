@@ -68,7 +68,7 @@ const staticCurriculum = {
         ],
         next: 'All modules completed — You are placement ready!',
         aiTools: [
-            { label: 'AI Interviewer', sub: 'Advanced mock sessions', path: '/ai-interviewer', icon: Target, col: 'text-violet-600', bg: 'bg-violet-50 border-violet-100' },
+            { label: 'AI Interviewer', sub: 'Advanced mock sessions', path: '/interview', icon: Target, col: 'text-violet-600', bg: 'bg-violet-50 border-violet-100' },
         ],
     },
 };

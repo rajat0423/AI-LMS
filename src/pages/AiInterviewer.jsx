@@ -275,7 +275,7 @@ function AiInterviewer() {
 
     const handleFinishEarly = async () => {
         if (isTyping) return;
-        const userAnswers = messages.filter(m => m.role === 'user').map(m => m.text);
+        const userAnswers = messages.filter(m => m.role === 'user').map(m => m.text).slice(0, 3);
         if (userAnswers.length === 0) {
             handleBackToSetup();
             return;
@@ -327,6 +327,7 @@ function AiInterviewer() {
     if (feedbackReport) {
         return (
             <div className="w-full max-w-[1000px] mx-auto px-4 py-8 flex flex-col gap-6">
+                <BackButton fallbackPath="/ai-tools" />
                 <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 md:p-12 flex flex-col gap-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
 
@@ -623,7 +624,9 @@ function AiInterviewer() {
     // CHAT SCREEN — Premium theater-mode layout (matches MockInterview)
     // ═══════════════════════════════════════════════════════════════════
     return (
-        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] flex flex-col lg:flex-row gap-6">
+        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-64px)] flex flex-col gap-4">
+            <BackButton fallbackPath="/ai-tools" />
+            <div className="w-full lg:h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-6">
 
             {/* Main Chat Panel */}
             <motion.div
@@ -841,6 +844,7 @@ function AiInterviewer() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            </div>
         </div>
     );
 }

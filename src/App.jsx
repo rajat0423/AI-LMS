@@ -83,6 +83,7 @@ function AppRoutes() {
         <Route path="/course/:id" element={<ProtectedRoute><Layout><CourseDetail /></Layout></ProtectedRoute>} />
         <Route path="/quiz/:id" element={<ProtectedRoute><Layout><QuizViewer /></Layout></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><Layout><AiInterviewer /></Layout></ProtectedRoute>} />
+        <Route path="/ai-interviewer" element={<Navigate to="/interview" replace />} />
         <Route path="/resume" element={<ProtectedRoute><Layout><ResumeAnalyzer /></Layout></ProtectedRoute>} />
         <Route path="/resume-tailor" element={<ProtectedRoute><Layout><ResumeTailor /></Layout></ProtectedRoute>} />
         <Route path="/email-writer" element={<ProtectedRoute><Layout><EmailGenerator /></Layout></ProtectedRoute>} />

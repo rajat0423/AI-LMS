@@ -35,6 +35,8 @@ class LearningStatsResponse(BaseModel):
     avg_accuracy: int
     confidence_score: int
     has_taken_interview: bool
+    has_drafted_email: bool
+    career_xp: int
 
     model_config = ConfigDict(from_attributes=True)
 

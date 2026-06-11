@@ -26,6 +26,8 @@ class LearningStats:
     avg_accuracy: int
     confidence_score: int
     has_taken_interview: bool
+    has_drafted_email: bool
+    career_xp: int
 
 
 def _update_streak(db: Session, user_id: uuid.UUID) -> Streak:
@@ -235,6 +237,27 @@ def get_learning_stats(db: Session, user: User) -> LearningStats:
         .first()
     ) is not None
 
+    from app.models.submission import Submission, SubmissionType
+    has_drafted_email = (
+        db.query(Submission)
+        .filter(
+            Submission.user_id == user.user_id,
+            Submission.submission_type == SubmissionType.EMAIL,
+        )
+        .first()
+    ) is not None
+
+    career_xp = 0
+    if resume_score > 0:
+        career_xp += 100
+    if completed_lessons > 0:
+        career_xp += 150
+    if has_taken_interview:
+        career_xp += 250
+    if has_drafted_email:
+        career_xp += 50
+    career_xp += (streak.current_streak if streak else 0) * 150
+
     return LearningStats(
         total_modules=total_modules,
         completed_modules=completed_modules,
@@ -247,4 +270,6 @@ def get_learning_stats(db: Session, user: User) -> LearningStats:
         avg_accuracy=avg_accuracy,
         confidence_score=confidence_score,
         has_taken_interview=has_taken_interview,
+        has_drafted_email=has_drafted_email,
+        career_xp=career_xp,
     )

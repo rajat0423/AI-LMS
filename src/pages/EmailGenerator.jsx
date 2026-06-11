@@ -255,13 +255,39 @@ export default function EmailGenerator() {
         setStatus({ type: 'success', text: 'AI version applied to your editable draft.' });
     };
 
+    const recordEmailDraft = async ({ subject, body }) => {
+        const content = [`Subject: ${subject.trim()}`, body.trim()].filter(Boolean).join('\n\n');
+        if (!content.trim()) return;
+
+        localStorage.setItem('nlm-has-drafted-email', 'true');
+
+        if (token) {
+            try {
+                await fetch(apiUrl('/api/v1/submissions'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        submission_type: 'email',
+                        content,
+                    }),
+                });
+            } catch (error) {
+                console.error('Failed to record email mission progress:', error);
+            }
+        }
+
+        refreshUserData();
+    };
+
     const handleCopyCurrentDraft = async () => {
         const current = getCurrentComposeState();
         if (!current.subject.trim() && !current.body.trim()) { setStatus({ type: 'error', text: 'There is no draft to copy yet.' }); return; }
         try {
             await copyText(`Subject: ${current.subject}\n\n${current.body}`);
-            localStorage.setItem('nlm-has-drafted-email', 'true');
-            refreshUserData();
+            await recordEmailDraft(current);
             setStatus({ type: 'success', text: 'Current draft copied to clipboard.' });
         } catch (error) {
             console.error('Clipboard error:', error);
@@ -273,6 +299,7 @@ export default function EmailGenerator() {
         if (!assistantResult?.subject && !assistantResult?.body) return;
         try {
             await copyText(`Subject: ${assistantResult.subject}\n\n${assistantResult.body}`);
+            await recordEmailDraft(assistantResult);
             setStatus({ type: 'success', text: 'AI version copied to clipboard.' });
         } catch (error) {
             console.error('Clipboard error:', error);
@@ -280,13 +307,12 @@ export default function EmailGenerator() {
         }
     };
 
-    const handleOpenMailApp = () => {
+    const handleOpenMailApp = async () => {
         const current = getCurrentComposeState();
         const mailtoLink = getMailtoLink(current);
         if (!mailtoLink) { setStatus({ type: 'error', text: 'Add a subject or body before opening the mail app.' }); return; }
+        await recordEmailDraft(current);
         window.location.href = mailtoLink;
-        localStorage.setItem('nlm-has-drafted-email', 'true');
-        refreshUserData();
         setStatus({ type: 'info', text: 'Opening your default mail app with the current draft prefilled.' });
     };
 

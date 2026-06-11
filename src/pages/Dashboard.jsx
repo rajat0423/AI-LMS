@@ -43,7 +43,7 @@ function AnimatedNumber({ value, duration = 1.5, isPercent, suffix = "" }) {
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const { userState } = useGlobalUser();
+    const { userState, isLoadingUser } = useGlobalUser();
 
     const [checklist, setChecklist] = useState([
         { id: 1, text: 'Analyze Resume against target Job Description', completed: false, xp: 100 },
@@ -58,7 +58,7 @@ export default function Dashboard() {
             const hasUploadedResume = (userState.stats.resume_score || 0) > 0;
             const hasCompletedQuiz = (userState.stats.completed_lessons || 0) > 0;
             const hasTakenInterview = !!userState.stats.has_taken_interview;
-            const hasDraftedEmail = localStorage.getItem('nlm-has-drafted-email') === 'true';
+            const hasDraftedEmail = !!userState.stats.has_drafted_email || localStorage.getItem('nlm-has-drafted-email') === 'true';
 
             setChecklist([
                 { id: 1, text: 'Analyze Resume against target Job Description', completed: hasUploadedResume, xp: 100 },
@@ -71,7 +71,7 @@ export default function Dashboard() {
 
     const streakCount = userState?.streakCount || 0;
     const completedMissionsXp = checklist.filter(item => item.completed).reduce((sum, item) => sum + item.xp, 0);
-    const totalXp = (streakCount * 150) + completedMissionsXp;
+    const totalXp = Math.max(userState?.stats?.career_xp ?? 0, (streakCount * 150) + completedMissionsXp);
 
     const milestones = [
         {
@@ -108,6 +108,13 @@ export default function Dashboard() {
             desc: 'Simulated a live tech/HR interview with adaptive response prep.',
             completed: !!userState.stats?.has_taken_interview,
             time: userState.stats?.has_taken_interview ? 'Completed' : 'Locked'
+        },
+        {
+            id: 'email',
+            title: 'Professional Email Drafted',
+            desc: 'Created an outreach, follow-up, or workplace email draft.',
+            completed: !!userState.stats?.has_drafted_email || localStorage.getItem('nlm-has-drafted-email') === 'true',
+            time: userState.stats?.has_drafted_email || localStorage.getItem('nlm-has-drafted-email') === 'true' ? 'Completed' : 'Locked'
         }
     ];
 
@@ -125,6 +132,14 @@ export default function Dashboard() {
         }, 8000);
         return () => clearInterval(interval);
     }, [tips.length]);
+
+    if (isLoadingUser) {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold">
+                Loading your learning progress...
+            </div>
+        );
+    }
 
     if (!userState.hasTakenAssessment) {
         return <InitialAssessmentWizard />;

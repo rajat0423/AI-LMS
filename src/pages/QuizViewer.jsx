@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, XCircle, ArrowRight, ArrowLeft, Award, RotateCcw, Lightbulb, Target, BrainCircuit, BarChart2, TrendingUp, BookOpen, Layers } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowRight, Award, RotateCcw, Lightbulb, Target, BrainCircuit, BarChart2, TrendingUp, BookOpen, Layers } from 'lucide-react';
 import { apiUrl } from '../api';
 import { useAuth } from '../context/useAuth';
 import { useGlobalUser } from '../context/useGlobalUser';
+import BackButton from '../components/BackButton';
 
 function QuizViewer() {
     const { id } = useParams();
@@ -86,14 +87,21 @@ function QuizViewer() {
         }
     };
 
-    if (isLoading) return <div className="p-12 text-center dark:text-white">Loading assessment...</div>;
+    if (isLoading) {
+        return (
+            <div className="w-full max-w-3xl mx-auto px-4 py-12">
+                <BackButton fallbackPath="/read-comprehension" />
+                <div className="p-12 text-center dark:text-white">Loading assessment...</div>
+            </div>
+        );
+    }
 
     if (!quiz || !quiz.questions || quiz.questions.length === 0) {
         return (
             <div className="w-full max-w-3xl mx-auto p-12 text-center">
+                <BackButton fallbackPath="/read-comprehension" />
                 <h2 className="text-2xl font-bold dark:text-white mb-4">No Assessment Found</h2>
                 <p className="text-slate-500 mb-6">There is no quiz configured for this topic yet.</p>
-                <button onClick={() => navigate(-1)} className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg">Go Back</button>
             </div>
         );
     }
@@ -157,6 +165,7 @@ function QuizViewer() {
 
         return (
             <div className="w-full max-w-3xl mx-auto px-4 py-12">
+                <BackButton fallbackPath="/read-comprehension" />
                 <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                     className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-xl border border-slate-100 dark:border-slate-700 relative overflow-hidden mb-8">
                     <div className={`absolute top-0 left-0 w-full h-2 ${result.passed ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
@@ -394,9 +403,7 @@ function QuizViewer() {
 
     return (
         <div className="w-full max-w-3xl mx-auto px-4 py-12 dark:text-white">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-colors text-sm font-bold mb-8">
-                <ArrowLeft size={16} /> Exit Assessment
-            </button>
+            <BackButton fallbackPath="/read-comprehension" />
 
             <div className="mb-8">
                 <h1 className="text-2xl font-bold font-heading mb-2">{quiz.title}</h1>
