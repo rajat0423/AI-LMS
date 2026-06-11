@@ -1,5 +1,7 @@
 # Aao Seekhe — AI-Powered Learning Management System
 
+[![Live Demo](https://img.shields.io/badge/Demo-Live_Site-blue?style=for-the-badge&logo=vercel)](https://aaoseekhelive.vercel.app/)
+
 A full-stack LMS platform with AI-driven modules, MCQ workspaces, resume analysis, mock interviews, email generation, and employability tracking.
 
 ## Tech Stack

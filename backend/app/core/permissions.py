@@ -25,11 +25,15 @@ class RoleChecker:
         return current_user
 
 # Pre-defined role checkers
-require_student = RoleChecker(["student"])
+require_student = RoleChecker(["student", "admin"])
 require_admin = RoleChecker(["admin"])
 require_either = RoleChecker(["student", "admin"])
 
 def require_premium(current_user: User = Depends(require_student)):
+    # Admins bypass premium check automatically
+    if current_user.role and current_user.role.role_name == "admin":
+        return current_user
+        
     if not current_user.subscription or current_user.subscription.status != "active":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
