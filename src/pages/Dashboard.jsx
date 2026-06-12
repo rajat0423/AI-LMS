@@ -242,7 +242,7 @@ export default function Dashboard() {
             col: 'text-emerald-600 dark:text-emerald-400',
             bg: 'bg-emerald-50 dark:bg-emerald-950/20',
             border: 'border-emerald-100 dark:border-emerald-900/20',
-            badge: 'SaaS Creator',
+            badge: 'Content Creator',
             time: '10 mins'
         },
     ];

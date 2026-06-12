@@ -155,7 +155,7 @@ export default function ResumeTailor() {
                     github: "https://github.com"
                 },
                 summary: "Results-driven Software Engineer with hands-on experience building highly scalable full-stack applications and intelligent AI services. Expert in Python, FastAPI, and React, specializing in system optimizations, background multitasking, and deploying high-performance REST APIs aligned with strict product goals.",
-                skills: ["Python", "FastAPI", "React.js", "JavaScript (ES6+)", "SQLAlchemy", "PostgreSQL", "Groq AI Llama API", "Git", "GitHub Actions", "Docker", "Tailwind CSS", "RESTful APIs", "Agile Methodologies"],
+                skills: ["Python", "FastAPI", "React.js", "JavaScript (ES6+)", "SQLAlchemy", "PostgreSQL", "Advanced LLM APIs", "Git", "GitHub Actions", "Docker", "Tailwind CSS", "RESTful APIs", "Agile Methodologies"],
                 experience: [
                     {
                         company: "Global Tech Solutions",
@@ -194,7 +194,7 @@ export default function ResumeTailor() {
                 projects: [
                     {
                         title: "Interactive AI-LMS Platform",
-                        technologies: ["React.js", "FastAPI", "PostgreSQL", "Groq AI"],
+                        technologies: ["React.js", "FastAPI", "PostgreSQL", "Generative AI Services"],
                         bullets: [
                             "Designed a premium interactive Resume Builder that extracts resume text and aligns it dynamically with any target Job Description.",
                             "Engineered a responsive split-screen preview workspace allowing real-time CSS style changes and instant print-perfect PDF compiles."
@@ -675,7 +675,7 @@ export default function ResumeTailor() {
                                 <textarea
                                     value={jdText}
                                     onChange={(e) => setJdText(e.target.value)}
-                                    placeholder="Paste the target role description, key skills, and company background here. Groq AI will perfectly adjust summaries, STAR bullets, and align requirements..."
+                                    placeholder="Paste the target role description, key skills, and company background here. Our AI will perfectly adjust summaries, STAR bullets, and align requirements..."
                                     className="w-full h-44 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/40 focus:border-indigo-400 outline-none text-sm text-slate-700 dark:text-slate-100 font-medium leading-relaxed resize-none transition-all"
                                 />
                             </div>

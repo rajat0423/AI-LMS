@@ -27,7 +27,7 @@ const aiTools = [
     {
         id: 'resume-tailor',
         title: 'AI Custom Resume Generator',
-        description: 'Upload your PDF and tailor it to any Job Description using Groq AI with 10 premium single-page style presets.',
+        description: 'Upload your PDF and tailor it to any Job Description using advanced AI with 10 premium single-page style presets.',
         path: '/resume-tailor',
         icon: Briefcase,
         color: 'text-violet-600 dark:text-violet-400',

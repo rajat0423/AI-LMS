@@ -95,7 +95,7 @@ export default function InitialAssessmentWizard() {
                     className="w-16 h-16 border-4 border-indigo-100 dark:border-slate-800 border-t-indigo-600 dark:border-t-indigo-400 rounded-full mb-6"
                 />
                 <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">Analyzing Baseline...</h2>
-                <p className="text-slate-500 dark:text-slate-400 font-bold">Generating your personalized SaaS learning curriculum.</p>
+                <p className="text-slate-500 dark:text-slate-400 font-bold">Generating your personalized learning curriculum.</p>
             </div>
         );
     }

@@ -488,7 +488,7 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                                     </div>
                                 )}
                                 
-                                <button type="submit" disabled={isSubmitting} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/20 disabled:opacity-70 flex items-center justify-center gap-2">
+                                <button type="submit" disabled={isSubmitting} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 text-white text-sm font-semibold rounded-xl transition-all shadow-md hover:scale-[1.01] active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2">
                                     {isSubmitting ? (
                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     ) : (
@@ -499,11 +499,7 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                                     )}
                                 </button>
                                 
-                                <div className="relative flex items-center py-2">
-                                    <div className="flex-grow border-t border-slate-200"></div>
-                                    <span className="shrink-0 mx-4 text-slate-400 text-[10px] font-bold uppercase tracking-wider">Or continue with</span>
-                                    <div className="flex-grow border-t border-slate-200"></div>
-                                </div>
+
                                 
                                 <div className="flex justify-center w-full min-h-[44px]">
                                     <div ref={googleButtonRef} className="w-full flex justify-center [&>div]:w-full [&>div]:max-w-xs [&_iframe]:mx-auto" />
@@ -580,9 +576,9 @@ function Landing() {
             <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} initialView={authView} />
             
             {/* Background glowing blurred radial patterns */}
-            <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute -top-[20%] -right-[10%] w-[65%] h-[120%] bg-blue-500/10 rounded-full blur-[140px] mix-blend-multiply dark:mix-blend-normal"></div>
-                <div className="absolute top-[10%] -left-[10%] w-[55%] h-[100%] bg-rose-500/5 rounded-full blur-[130px] mix-blend-multiply dark:mix-blend-normal"></div>
+            <div className="absolute top-0 left-0 w-full h-[1000px] overflow-hidden -z-10 pointer-events-none">
+                <div className="absolute -top-[20%] -right-[10%] w-[65%] h-[100%] bg-gradient-to-br from-indigo-500/15 via-blue-500/10 to-emerald-500/10 rounded-full blur-[140px] mix-blend-multiply dark:mix-blend-normal"></div>
+                <div className="absolute top-[10%] -left-[10%] w-[55%] h-[90%] bg-gradient-to-tr from-rose-500/10 via-amber-500/8 to-violet-500/10 rounded-full blur-[130px] mix-blend-multiply dark:mix-blend-normal"></div>
             </div>
 
             {/* Header */}
@@ -591,12 +587,12 @@ function Landing() {
                     <img src="/logo.webp" alt="Aao Seekhe Live" className="h-10 w-auto" />
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-extrabold text-slate-500 dark:text-slate-400">
-                    <a href="#features" className="hover:text-indigo-600 transition-colors uppercase tracking-widest text-[11px]">SaaS Features</a>
+                    <a href="#features" className="hover:text-indigo-600 transition-colors uppercase tracking-widest text-[11px]">Platform Features</a>
                     <a href="#process" className="hover:text-indigo-600 transition-colors uppercase tracking-widest text-[11px]">Dynamic Workflow</a>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button onClick={() => openAuth('login')} className="text-sm font-black text-slate-700 dark:text-slate-300 hover:text-indigo-600 transition-colors uppercase tracking-wider">Log in</button>
-                    <button onClick={() => openAuth('signup')} className="px-6 py-3 bg-indigo-600 text-white text-xs font-black rounded-full hover:bg-indigo-700 transition-colors uppercase tracking-widest shadow-lg shadow-indigo-600/25 active:scale-95 transition-transform">Get Started</button>
+                    <button onClick={() => openAuth('login')} className="text-sm font-semibold text-slate-700 dark:text-slate-350 hover:text-indigo-600 transition-colors">Log in</button>
+                    <button onClick={() => openAuth('signup')} className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-full transition-all hover:shadow-md active:scale-95 transition-transform">Get Started</button>
                 </div>
             </header>
 
@@ -608,16 +604,16 @@ function Landing() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                         
                         {/* Rating Star Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-indigo-700 dark:text-indigo-400 text-xs font-black uppercase tracking-widest rounded-full mb-6 shadow-sm">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-white to-slate-50 dark:from-slate-900 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 text-indigo-700 dark:text-indigo-400 text-xs font-black uppercase tracking-widest rounded-full mb-6 shadow-sm">
                             <span className="flex items-center gap-0.5 text-amber-500 mr-1.5">
                                 ★★★★★
                             </span>
                             5-Star AI Platform
                         </div>
                         
-                        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-955 dark:text-white leading-[1.08] mb-6 tracking-tight font-heading">
+                        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-900 dark:text-white leading-[1.08] mb-6 tracking-tight font-heading">
                             Create your perfect <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-rose-700 dark:from-blue-400 dark:via-indigo-400 dark:to-rose-400">career roadmap.</span>
+                            <span className="animate-text-gradient">career roadmap.</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold">
                             Instantly tailor your resume with 10 premium layouts, optimize keywords with our ATS analyzer, and simulate voice interviews with live coach feedback.
@@ -625,8 +621,8 @@ function Landing() {
                         
                         {/* Hero CTAs */}
                         <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                            <button onClick={() => openAuth('signup')} className="w-full sm:w-auto px-8 py-4.5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/25 flex items-center justify-center gap-2.5 text-base uppercase tracking-widest active:scale-95">
-                                Create My Account <ArrowRight size={18} />
+                            <button onClick={() => openAuth('signup')} className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2.5 text-base group">
+                                Create My Account <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
                             </button>
                         </div>
                         
@@ -680,7 +676,7 @@ function Landing() {
                                 <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-2">aaoseekhe.live console</span>
                             </div>
                             <span className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/40 rounded-md border border-rose-200/50 dark:border-rose-900/30">
-                                SaaS Preview
+                            Live Preview
                             </span>
                         </div>
 
@@ -871,27 +867,59 @@ function Landing() {
             <section id="process" className="py-20 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-900 relative">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center max-w-2xl mx-auto mb-16 flex flex-col gap-4">
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-955 dark:text-white font-heading">
-                            High-fidelity dynamic workflow.
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-heading">
+                            High-fidelity <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">dynamic workflow.</span>
                         </h2>
-                        <p className="text-base sm:text-lg text-slate-505 dark:text-slate-400 font-semibold leading-relaxed">
+                        <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                             A seamless step-by-step career alignment pipeline designed to boost shortlist ratios and confidence.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {stepsList.map((step, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-8 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-xs flex flex-col gap-4 relative group hover:-translate-y-1 transition-all duration-300">
-                                <div className="absolute top-6 right-6 text-5xl font-black text-indigo-600/10 dark:text-indigo-400/10 select-none">
-                                    0{idx + 1}
+                        {stepsList.map((step, idx) => {
+                            const stepColors = [
+                                { 
+                                    border: 'hover:border-blue-400 dark:hover:border-blue-800', 
+                                    shadow: 'hover:shadow-[0_15px_35px_-5px_rgba(59,130,246,0.18)]',
+                                    num: 'text-blue-600/20 dark:text-blue-400/25 animate-glow-blue', 
+                                    heading: 'border-blue-100 dark:border-blue-900', 
+                                    topBar: 'bg-gradient-to-r from-blue-500 to-indigo-500',
+                                    float: 'animate-float-blue'
+                                },
+                                { 
+                                    border: 'hover:border-rose-400 dark:hover:border-rose-800', 
+                                    shadow: 'hover:shadow-[0_15px_35px_-5px_rgba(244,63,94,0.18)]',
+                                    num: 'text-rose-600/20 dark:text-rose-400/25 animate-glow-rose', 
+                                    heading: 'border-rose-100 dark:border-rose-900', 
+                                    topBar: 'bg-gradient-to-r from-rose-500 to-pink-500',
+                                    float: 'animate-float-rose'
+                                },
+                                { 
+                                    border: 'hover:border-amber-400 dark:hover:border-amber-800', 
+                                    shadow: 'hover:shadow-[0_15px_35px_-5px_rgba(245,158,11,0.18)]',
+                                    num: 'text-amber-600/20 dark:text-amber-400/25 animate-glow-amber', 
+                                    heading: 'border-amber-100 dark:border-amber-900', 
+                                    topBar: 'bg-gradient-to-r from-amber-500 to-orange-500',
+                                    float: 'animate-float-amber'
+                                }
+                            ];
+                            const currentTheme = stepColors[idx % 3];
+                            return (
+                                <div key={idx} className={`bg-white dark:bg-slate-950 p-8 pt-10 rounded-[2rem] border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-4 relative group hover:-translate-y-1.5 ${currentTheme.border} ${currentTheme.shadow} ${currentTheme.float} transition-all duration-350 overflow-hidden`}>
+                                    {/* Top colored accent bar */}
+                                    <div className={`absolute top-0 left-0 w-full h-[5px] ${currentTheme.topBar}`} />
+                                    
+                                    <div className={`absolute top-6 right-6 text-6xl font-black ${currentTheme.num} select-none`}>
+                                        0{idx + 1}
+                                    </div>
+                                    <h3 className={`text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider border-b ${currentTheme.heading} pb-3`}>
+                                        {step.title.split('. ')[1]}
+                                    </h3>
+                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-350 mt-1">{step.subtitle}</p>
+                                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">{step.desc}</p>
                                 </div>
-                                <h3 className="text-lg font-black text-slate-955 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800/80 pb-3">
-                                    {step.title.split('. ')[1]}
-                                </h3>
-                                <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mt-1">{step.subtitle}</p>
-                                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">{step.desc}</p>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -900,8 +928,8 @@ function Landing() {
             <section id="features" className="py-24 border-t border-slate-200 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-950/40 relative">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center max-w-2xl mx-auto mb-16 flex flex-col gap-4">
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-955 dark:text-white font-heading">
-                            SaaS Career Suite
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-heading">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-rose-600">Smart Career Suite</span>
                         </h2>
                         <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                             Everything you need to step confidently into your next big placement, powered by personalized AI algorithms.
@@ -911,14 +939,15 @@ function Landing() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                         
                         {/* Big Card: Live AI Mock Interview Coach */}
-                        <div className="md:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden group border border-slate-800 flex flex-col justify-between min-h-[340px]">
-                            <div className="absolute right-0 bottom-0 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
+                        <div className="md:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden group border border-slate-800 flex flex-col justify-between min-h-[340px] hover:shadow-[0_20px_50px_rgba(79,70,229,0.15)] transition-all duration-500">
+                            <div className="absolute right-0 bottom-0 w-96 h-96 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-rose-500/5 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
+                            <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-500 via-indigo-500 to-rose-500"></div>
                             
                             <div className="flex flex-col gap-4 relative z-10">
                                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
-                                    <Mic size={22} />
+                                    <Mic size={22} className="text-indigo-400" />
                                 </div>
-                                <h3 className="text-2xl md:text-3xl font-black tracking-tight">AI Mock Interview Coach</h3>
+                                <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white">AI Mock Interview Coach</h3>
                                 <p className="text-slate-400 text-sm sm:text-base max-w-lg font-semibold leading-relaxed">
                                     Practice situational and technical placement interviews with LLaMA speech processing. Receive dynamic, granular coaching score suggestions based on speaking pacing.
                                 </p>
@@ -929,28 +958,30 @@ function Landing() {
                         </div>
 
                         {/* Card 2: Custom Resume Templates Sidebar presets */}
-                        <div className="bg-white dark:bg-slate-905 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 flex flex-col justify-between min-h-[340px] hover:border-slate-350 dark:hover:border-slate-700 transition-colors">
+                        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 flex flex-col justify-between min-h-[340px] hover:border-rose-500/50 hover:shadow-lg hover:shadow-rose-500/5 transition-all duration-300 relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-rose-500 to-amber-500"></div>
                             <div className="flex flex-col gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center">
-                                    <Briefcase size={20} />
+                                    <Briefcase size={20} className="text-rose-500" />
                                 </div>
-                                <h3 className="text-xl sm:text-2xl font-black text-slate-955 dark:text-white tracking-tight">Custom Resume Templates</h3>
+                                <h3 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-600 tracking-tight">Custom Resume Templates</h3>
                                 <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-semibold leading-relaxed">
                                     Format documents using 10 premium typographical presets calibrated for a strict, ATS-friendly one-page print limit.
                                 </p>
                             </div>
-                            <div className="mt-8 font-heading text-5xl font-black text-slate-200 dark:text-slate-805 select-none">
+                            <div className="mt-8 font-heading text-5xl font-black bg-gradient-to-r from-rose-500/10 to-amber-500/10 bg-clip-text text-transparent select-none group-hover:scale-105 transition-transform duration-300">
                                 PDF 10x
                             </div>
                         </div>
 
                         {/* Card 3: ATS Score Calculator check */}
-                        <div className="bg-white dark:bg-slate-905 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 flex flex-col justify-between min-h-[220px] hover:border-slate-350 dark:hover:border-slate-700 transition-colors">
+                        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 flex flex-col justify-between min-h-[220px] hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-500 to-teal-500"></div>
                             <div className="flex flex-col gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20 flex items-center justify-center">
-                                    <FileText size={18} />
+                                    <FileText size={18} className="text-blue-500" />
                                 </div>
-                                <h3 className="text-lg sm:text-xl font-black text-slate-955 dark:text-white tracking-tight">ATS Score Calculator</h3>
+                                <h3 className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-600 tracking-tight">ATS Score Calculator</h3>
                                 <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold leading-relaxed">
                                     Perform keyword density scans against job descriptions to dynamically identify formatting gaps.
                                 </p>
@@ -958,17 +989,18 @@ function Landing() {
                         </div>
 
                         {/* Card 4: Email outreach writer */}
-                        <div className="md:col-span-2 bg-indigo-50 dark:bg-slate-905 rounded-[2.5rem] p-8 border border-indigo-100 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-8 justify-between hover:border-indigo-200 dark:hover:border-slate-700 transition-colors">
+                        <div className="md:col-span-2 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-slate-900 dark:to-slate-950/80 rounded-[2.5rem] p-8 border border-indigo-100/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-8 justify-between hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-indigo-500 to-purple-500"></div>
                             <div className="flex-1 flex flex-col gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-600 border border-indigo-600/20 flex items-center justify-center">
-                                    <Sparkles size={18} className="fill-indigo-400" />
+                                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 border border-purple-500/20 flex items-center justify-center">
+                                    <Sparkles size={18} className="fill-purple-400 text-purple-600" />
                                 </div>
-                                <h3 className="text-lg sm:text-xl font-black text-slate-955 dark:text-white tracking-tight">Email outreach & Blog SaaS</h3>
+                                <h3 className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 tracking-tight">Email Outreach & Blog Creator</h3>
                                 <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-semibold leading-relaxed">
-                                    Draft follow-ups, cold cover letters, and thought-leadership SDE blog posts instantly with Groq AI writer integrations.
+                                    Draft follow-ups, cold cover letters, and thought-leadership SDE blog posts instantly with advanced AI writer integrations.
                                 </p>
                             </div>
-                            <div className="w-full sm:w-64 h-32 bg-white dark:bg-slate-950 rounded-2xl shadow-inner border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-500 font-semibold p-4 text-xs italic leading-relaxed text-center">
+                            <div className="w-full sm:w-64 h-32 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-indigo-100/80 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-350 font-semibold p-4 text-xs italic leading-relaxed text-center">
                                 "Hi placement team, thank you for organizing the technical mock session today..."
                             </div>
                         </div>
@@ -987,7 +1019,7 @@ function Landing() {
                     <p className="text-slate-400 text-sm sm:text-base font-semibold leading-relaxed">
                         Join placement students today. Upload your resume, configure baseline anxiety assessments, and test speaking flow in minutes.
                     </p>
-                    <button onClick={() => openAuth('signup')} className="mt-4 px-10 py-4.5 bg-white text-slate-950 font-black rounded-2xl hover:bg-slate-100 transition-all shadow-xl active:scale-95 text-base uppercase tracking-widest">
+                    <button onClick={() => openAuth('signup')} className="mt-4 px-10 py-4 bg-white hover:bg-slate-50 text-slate-955 font-semibold rounded-2xl transition-all shadow-lg hover:shadow-white/5 hover:scale-[1.01] active:scale-[0.98] text-base">
                         Get Started Free
                     </button>
                 </div>

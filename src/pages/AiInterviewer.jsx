@@ -414,7 +414,7 @@ function AiInterviewer() {
                                 </div>
                                 <div>
                                     <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">AI Interview Coach</h1>
-                                    <p className="text-indigo-300 text-sm font-medium mt-0.5">Powered by Groq AI</p>
+                                    <p className="text-indigo-300 text-sm font-medium mt-0.5">Powered by Advanced AI</p>
                                 </div>
                             </div>
                             <p className="text-slate-300 text-sm leading-relaxed max-w-xl mt-2">
