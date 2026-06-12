@@ -53,6 +53,100 @@ const YEAR_OPTIONS = [
     { value: 4, label: 'Year 4' },
 ];
 
+const TESTIMONIALS = [
+    {
+        name: "Aditi Awasthi",
+        role: "Software Engineering Student",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Aditi Awasthi.jpg",
+        text: "Aao Seekhe's ATS optimizer helped me refine my resume keywords. I went from getting zero callbacks to securing multiple interviews!"
+    },
+    {
+        name: "Avnish Mishra",
+        role: "Frontend Developer",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Avnish Mishra.jpg",
+        text: "The AI Mock Interview Coach is incredibly realistic. The speaking pace feedback helped me overcome my interview anxiety."
+    },
+    {
+        name: "Ayushi Singh",
+        role: "Data Analyst Trainee",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Ayushi Singh.jpg",
+        text: "The premium templates are highly professional and completely ATS-friendly. Helped me format my SDE resume perfectly."
+    },
+    {
+        name: "Dimple Motwani",
+        role: "Software Engineer",
+        company: "Oracle",
+        image: "/testimonials/Dimple Motwani Oracle.png",
+        text: "I used the STAR interview coach to prepare for Oracle. The structured feedback on my behavioral answers was game-changing!"
+    },
+    {
+        name: "Divyansh Yadav",
+        role: "Full Stack Engineer",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Divyansh Yadav.jpg",
+        text: "The email outreach writer saved me hours. I got response rates I've never seen before on LinkedIn cold outreach."
+    },
+    {
+        name: "Pratyaksha Shrivastava",
+        role: "Graduate Engineer Trainee",
+        company: "Mercedes-Benz",
+        image: "/testimonials/Pratyaksha Shrivastava- Mercedez benz.png",
+        text: "Preparing for Mercedes-Benz was tough, but simulating interviews with the AI Coach gave me the confidence I needed."
+    },
+    {
+        name: "Ruchita Singh",
+        role: "Software Engineer Trainee",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Ruchita Singh.jpg",
+        text: "Highly recommend the AI roadmap tools! It gives you a clear path on what projects to build and how to pitch them."
+    },
+    {
+        name: "Salem Subhati",
+        role: "Tech Intern",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Salem Subhati.jpeg",
+        text: "Aao Seekhe completely transformed my placement prep. The dynamic dashboard keeps all my progress organized in one place."
+    },
+    {
+        name: "Shraddha Gupta",
+        role: "Systems Engineer",
+        company: "Intel",
+        image: "/testimonials/Shraddha Gupta - Intel.jpeg",
+        text: "Got selected at Intel! The ATS keyword check and real-time score calculation were extremely accurate."
+    },
+    {
+        name: "Soro Soulegame Abu",
+        role: "International Student",
+        company: "Ivory Coast",
+        image: "/testimonials/Soro Soulegame Abu - Ivory Coast.jpeg",
+        text: "As an international student, the speech pacing analysis helped me improve my communication flow and confidence immensely."
+    },
+    {
+        name: "Sourav Choudhary",
+        role: "React SDE Trainee",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/sourav choudhary image.JPG",
+        text: "The portfolio builder and blog generator helped me stand out to recruiters as a proactive developer."
+    },
+    {
+        name: "Tejaswi Jain",
+        role: "Application Developer",
+        company: "IBM",
+        image: "/testimonials/Tejaswi Jain IBM.png",
+        text: "Secured an offer at IBM. The automated assessment wizards and layout customization are unmatched."
+    },
+    {
+        name: "Vipin Yadav",
+        role: "SDE Trainee",
+        company: "Aao Seekhe Alumni",
+        image: "/testimonials/Vipin Yadav.jpg",
+        text: "The mock sessions and speech metrics are top-tier. Helped me practice structured answers under time pressure."
+    }
+];
+
 // ── Auth Modal Component ────────────────────────────────────────────────────
 function AuthModal({ isOpen, onClose, initialView = 'login' }) {
     const { login, register, loginWithGoogle } = useAuth();
@@ -1007,6 +1101,85 @@ function Landing() {
                         </div>
 
                     </div>
+                </div>
+            </section>
+
+            {/* TESTIMONIALS SECTION */}
+            <section id="testimonials" className="py-24 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-900 relative overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 mb-16 text-center flex flex-col gap-4">
+                    <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-heading">
+                        Approved by <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">placement alumni.</span>
+                    </h2>
+                    <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 font-semibold leading-relaxed max-w-2xl mx-auto">
+                        Here's how students and professionals leverage Aao Seekhe Live to land roles at leading global companies.
+                    </p>
+                </div>
+
+                {/* Infinite Marquee Container */}
+                <div className="flex flex-col gap-8 w-full relative z-10 select-none">
+                    
+                    {/* Row 1: Left moving */}
+                    <div className="w-full overflow-hidden flex [mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)]">
+                        <div className="animate-marquee-left flex gap-6">
+                            {[...TESTIMONIALS.slice(0, 7), ...TESTIMONIALS.slice(0, 7)].map((t, idx) => (
+                                <div key={idx} className="w-[350px] shrink-0 bg-slate-50 dark:bg-slate-950/60 p-6 rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm hover:border-indigo-500/50 dark:hover:border-indigo-500/50 hover:shadow-lg transition-all duration-300 flex flex-col gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <img 
+                                            src={t.image} 
+                                            alt={t.name} 
+                                            className="w-12 h-12 rounded-full object-cover border border-slate-250 dark:border-slate-800 bg-slate-100"
+                                            onError={(e) => {
+                                                e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${t.name}`;
+                                            }}
+                                        />
+                                        <div>
+                                            <h4 className="text-sm font-black text-slate-900 dark:text-white">{t.name}</h4>
+                                            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">{t.role}</p>
+                                            <span className="inline-block px-2 py-0.5 mt-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-md text-[9px] font-bold border border-indigo-100 dark:border-indigo-900/30">
+                                                {t.company}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="text-amber-500 text-xs font-bold select-none">★★★★★</div>
+                                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium italic">
+                                        "{t.text}"
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Row 2: Right moving */}
+                    <div className="w-full overflow-hidden flex [mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)]">
+                        <div className="animate-marquee-right flex gap-6">
+                            {[...TESTIMONIALS.slice(7), ...TESTIMONIALS.slice(7)].map((t, idx) => (
+                                <div key={idx} className="w-[350px] shrink-0 bg-slate-50 dark:bg-slate-950/60 p-6 rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm hover:border-indigo-500/50 dark:hover:border-indigo-500/50 hover:shadow-lg transition-all duration-300 flex flex-col gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <img 
+                                            src={t.image} 
+                                            alt={t.name} 
+                                            className="w-12 h-12 rounded-full object-cover border border-slate-250 dark:border-slate-800 bg-slate-100"
+                                            onError={(e) => {
+                                                e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${t.name}`;
+                                            }}
+                                        />
+                                        <div>
+                                            <h4 className="text-sm font-black text-slate-900 dark:text-white">{t.name}</h4>
+                                            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">{t.role}</p>
+                                            <span className="inline-block px-2 py-0.5 mt-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-md text-[9px] font-bold border border-indigo-100 dark:border-indigo-900/30">
+                                                {t.company}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="text-amber-500 text-xs font-bold select-none">★★★★★</div>
+                                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium italic">
+                                        "{t.text}"
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
