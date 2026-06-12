@@ -66,7 +66,7 @@ const TESTIMONIALS = [
         role: "Frontend Developer",
         company: "Aao Seekhe Alumni",
         image: "/testimonials/Avnish Mishra.jpg",
-        text: "The AI Mock Interview Coach is incredibly realistic. The speaking pace feedback helped me overcome my interview anxiety."
+        text: "The AI Mock Interview Coach is incredibly realistic. The detailed feedback reports and model answer suggestions helped me overcome my interview anxiety."
     },
     {
         name: "Ayushi Singh",
@@ -122,7 +122,7 @@ const TESTIMONIALS = [
         role: "International Student",
         company: "Ivory Coast",
         image: "/testimonials/Soro Soulegame Abu - Ivory Coast.jpeg",
-        text: "As an international student, the speech pacing analysis helped me improve my communication flow and confidence immensely."
+        text: "As an international student, the interactive reading comprehension quizzes and communication modules helped me improve my written expression and overall confidence immensely."
     },
     {
         name: "Sourav Choudhary",
@@ -143,7 +143,7 @@ const TESTIMONIALS = [
         role: "SDE Trainee",
         company: "Aao Seekhe Alumni",
         image: "/testimonials/Vipin Yadav.jpg",
-        text: "The mock sessions and speech metrics are top-tier. Helped me practice structured answers under time pressure."
+        text: "The mock sessions and automated feedback reports are top-tier. Helped me practice structured answers and improve my response scores."
     }
 ];
 
@@ -413,7 +413,7 @@ function AuthModal({ isOpen, onClose, initialView = 'login' }) {
                                 </div>
                                 <div>
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-violet-300">STAR Interview Coach</h4>
-                                    <p className="text-slate-300 text-xs mt-0.5">Engage in rich audio interactions and perfect your structured verbal behavior.</p>
+                                    <p className="text-slate-300 text-xs mt-0.5">Engage in mock interview sessions and perfect your structured behavioral answers.</p>
                                 </div>
                             </div>
                         </div>
@@ -711,7 +711,7 @@ function Landing() {
                             <span className="animate-text-gradient">career roadmap.</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold">
-                            Instantly tailor your resume with 10 premium layouts, optimize keywords with our ATS analyzer, and simulate voice interviews with live coach feedback.
+                            Instantly tailor your resume with 10 premium layouts, optimize keywords with our ATS analyzer, and simulate realistic mock interviews with live AI coach feedback.
                         </p>
                         
                         {/* Hero CTAs */}
@@ -1044,7 +1044,7 @@ function Landing() {
                                 </div>
                                 <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white">AI Mock Interview Coach</h3>
                                 <p className="text-slate-400 text-sm sm:text-base max-w-lg font-semibold leading-relaxed">
-                                    Practice situational and technical placement interviews with LLaMA speech processing. Receive dynamic, granular coaching score suggestions based on speaking pacing.
+                                    Practice situational and technical placement interviews with LLaMA processing. Receive dynamic, granular coaching feedback and model answer suggestions based on your responses.
                                 </p>
                             </div>
                             <button onClick={() => openAuth('signup')} className="mt-8 text-xs font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2 hover:text-indigo-300 transition-colors w-max relative z-10">
@@ -1191,7 +1191,7 @@ function Landing() {
                         Ready to accelerate your professional career?
                     </h2>
                     <p className="text-slate-400 text-sm sm:text-base font-semibold leading-relaxed">
-                        Join placement students today. Upload your resume, configure baseline anxiety assessments, and test speaking flow in minutes.
+                        Join placement students today. Upload your resume, configure baseline curriculum assessments, and start mock interviews in minutes.
                     </p>
                     <button onClick={() => openAuth('signup')} className="mt-4 px-10 py-4 bg-white hover:bg-slate-50 text-slate-955 font-semibold rounded-2xl transition-all shadow-lg hover:shadow-white/5 hover:scale-[1.01] active:scale-[0.98] text-base">
                         Get Started Free

@@ -46,7 +46,6 @@ function SearchModal({ isOpen, onClose }) {
                 { type: 'tool', name: 'Resume Analyzer', path: '/resume' },
                 { type: 'tool', name: 'Email Generator', path: '/email-writer' },
                 { type: 'tool', name: 'Blog Writer', path: '/blog-writer' },
-                { type: 'tool', name: 'Speaking Exercise', path: '/speaking' },
                 { type: 'tool', name: 'AI Tools Hub', path: '/ai-tools' },
                 { type: 'tool', name: 'Profile', path: '/profile' },
                 { type: 'tool', name: 'Settings', path: '/settings' },
