@@ -3,7 +3,8 @@ import { useAuth } from '../context/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Bot, Sparkles, Brain, CheckCircle2, Eye, EyeOff, 
-    ArrowRight, Mic, FileText, Zap, ChevronRight, PlayCircle, X, Briefcase
+    ArrowRight, Mic, FileText, Zap, ChevronRight, PlayCircle, X, Briefcase,
+    MapPin, Phone, Mail, Globe
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -1026,12 +1027,77 @@ function Landing() {
             </section>
 
             {/* Footer */}
-            <footer className="bg-slate-950 py-12 text-slate-500 text-xs border-t border-slate-900">
-                <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center">
-                        <img src="/logo.webp" alt="Aao Seekhe Live" className="h-8 opacity-75 invert brightness-200" />
+            <footer className="bg-slate-950 pt-16 pb-12 text-slate-400 text-xs border-t border-slate-900 relative">
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+                    {/* Left Column: Logo & Contact Details */}
+                    <div className="flex flex-col gap-8">
+                        <div className="flex items-center">
+                            <img src="/logo.webp" alt="Aao Seekhe Live" className="h-10 opacity-90 invert brightness-200" />
+                        </div>
+                        
+                        {/* Contact Us Block */}
+                        <div className="flex flex-col gap-6">
+                            <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-350">
+                                <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)] inline-block" />
+                                Contact Us
+                            </div>
+                            
+                            <div className="flex flex-col gap-4 text-slate-300">
+                                {/* Address */}
+                                <div className="flex items-start gap-4">
+                                    <div className="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800 text-amber-400 flex items-center justify-center shrink-0">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <p className="text-sm font-medium leading-relaxed max-w-sm pt-1">
+                                        UGF 24, Arcadium One, Vrindavan Yojana Sector 16, Lucknow, Uttar Pradesh 226029
+                                    </p>
+                                </div>
+                                
+                                {/* Phone */}
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800 text-blue-400 flex items-center justify-center shrink-0">
+                                        <Phone size={16} />
+                                    </div>
+                                    <a href="tel:+917307870773" className="text-sm font-semibold hover:text-white transition-colors">
+                                        +91 73078 70773
+                                    </a>
+                                </div>
+                                
+                                {/* Email */}
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800 text-teal-400 flex items-center justify-center shrink-0">
+                                        <Mail size={16} />
+                                    </div>
+                                    <a href="mailto:info@aaoseekhe.com" className="text-sm font-semibold hover:text-white transition-colors">
+                                        info@aaoseekhe.com
+                                    </a>
+                                </div>
+                                
+                                {/* Website */}
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800 text-yellow-400 flex items-center justify-center shrink-0">
+                                        <Globe size={16} />
+                                    </div>
+                                    <a href="https://www.aaoseekhe.com" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold hover:text-white transition-colors">
+                                        www.aaoseekhe.com
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <p className="font-semibold text-center sm:text-right">© 2026 Aao Seekhe Live. All rights reserved.</p>
+                    
+                    {/* Right Column: Platform overview / Links / Description */}
+                    <div className="flex flex-col justify-between h-full md:text-right gap-8">
+                        <div>
+                            <h3 className="text-sm font-bold text-white mb-3">Aao Seekhe Live</h3>
+                            <p className="text-slate-400 leading-relaxed text-xs max-w-sm md:ml-auto">
+                                An integrated placement preparatory learning management system providing high-fidelity ATS tracking, templates, and speech coaches.
+                            </p>
+                        </div>
+                        <div className="border-t border-slate-900 pt-8 mt-auto">
+                            <p className="font-semibold text-slate-500">© 2026 Aao Seekhe Live. All rights reserved.</p>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>
