@@ -1108,7 +1108,7 @@ function Landing() {
             <section id="testimonials" className="py-24 border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-900 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 mb-16 text-center flex flex-col gap-4">
                     <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-heading">
-                        Approved by <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">placement alumni.</span>
+                        Approved by <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">successful learners.</span>
                     </h2>
                     <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 font-semibold leading-relaxed max-w-2xl mx-auto">
                         Here's how students and professionals leverage Aao Seekhe Live to land roles at leading global companies.
@@ -1134,10 +1134,6 @@ function Landing() {
                                         />
                                         <div>
                                             <h4 className="text-sm font-black text-slate-900 dark:text-white">{t.name}</h4>
-                                            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">{t.role}</p>
-                                            <span className="inline-block px-2 py-0.5 mt-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-md text-[9px] font-bold border border-indigo-100 dark:border-indigo-900/30">
-                                                {t.company}
-                                            </span>
                                         </div>
                                     </div>
                                     <div className="text-amber-500 text-xs font-bold select-none">★★★★★</div>
@@ -1165,10 +1161,6 @@ function Landing() {
                                         />
                                         <div>
                                             <h4 className="text-sm font-black text-slate-900 dark:text-white">{t.name}</h4>
-                                            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">{t.role}</p>
-                                            <span className="inline-block px-2 py-0.5 mt-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-md text-[9px] font-bold border border-indigo-100 dark:border-indigo-900/30">
-                                                {t.company}
-                                            </span>
                                         </div>
                                     </div>
                                     <div className="text-amber-500 text-xs font-bold select-none">★★★★★</div>
